@@ -1,0 +1,40 @@
+.calculator-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 50px) 50px; /* Trzy kolumny dla liczb + jedna kolumna dla operatorów */
+  gap: 10px;
+  max-width: max-content;
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 50px); /* Liczby w trzech kolumnach */
+  gap: 10px;
+  grid-column: 1 / span 3; /* Rozciągnij liczby na pierwsze trzy kolumny */
+}
+
+.operators {
+  display: grid;
+  grid-template-columns: repeat(1, 50px); /* Operatory w jednej kolumnie */
+  gap: 10px;
+  grid-column: 4; /* Operatory w czwartej kolumnie */
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+input {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: right;
+}
