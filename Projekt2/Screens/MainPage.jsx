@@ -1,12 +1,14 @@
+import React from "react";
 import Layout from "./Layout";
-import Content from "../Components/Content";
-function MainPage() {
+const Content = React.lazy(() => import("../Components/Content"));
+
+function MainPage({ loggedIn, setLoggedIn }) {
   return (
-    <div>
-      <Layout>
+    <Layout loggedIn={loggedIn} setLoggedIn={setLoggedIn}>
+      <React.Suspense fallback={<div>Loading content...</div>}>
         <Content />
-      </Layout>
-    </div>
+      </React.Suspense>
+    </Layout>
   );
 }
 

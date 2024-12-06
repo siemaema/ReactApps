@@ -1,45 +1,78 @@
 import { CImage, CListGroup, CListGroupItem } from "@coreui/react";
 import { useState, useEffect } from "react";
+import Modal from "./Modal";
+
 function Latest() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // Stan widoczności modala
+  const [selectedItem, setSelectedItem] = useState({}); // Wybrany element listy
+
+  const openModal = (item) => {
+    setSelectedItem(item); // Ustaw szczegóły elementu
+    setIsModalOpen(true); // Otwórz modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Zamknij modal
+  };
 
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const response = await fetch("http://localhost:5000/latest");
-        const ind = await response.json();
-        setData(ind);
-      } catch (err) {
-        console.error("blad przy wczytywaniu latest", err);
+        const response = await fetch("http://localhost:5000/api/latest");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error("Błąd przy wczytywaniu latest", error);
+        setError(
+          "Nie udało się załadować najnowszych produktów. Spróbuj ponownie później."
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchLatest();
-  }, []);
+  }, [API_URL]);
 
   if (loading) {
-    return <div>Ładowanie danych</div>;
+    return <div>Ładowanie danych...</div>;
   }
-  console.log(data);
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
   return (
-    <div className="rounded-lg h-full my-auto">
+    <div className="h-full my-auto">
       <CListGroup flush className="rounded-lg shadow-lg h-96 overflow-y-auto">
         <h1 className="text-center my-2">Latest</h1>
         {data.map((item, index) => (
-          <CListGroupItem key={index} className="h-14 ">
-            <div className="flex items-center content-center h-full">
-              <span>{item.data_Dodania}</span>
-              <span className="flex-grow content-center text-center">
-                {item.nazwa}
-              </span>
-
-              <CImage fluid src={item.img} className="size-11" />
+          <CListGroupItem
+            key={index}
+            className="h-14"
+            onClick={() => openModal(item)}
+          >
+            <div className="flex items-center gap-2">
+              <CImage
+                className="w-10 h-10 object-cover rounded-full"
+                src={item.image || "default-image.jpg"}
+                alt={item.nazwa || "Produkt"}
+              />
+              <span>{item.nazwa || "Brak nazwy produktu"}</span>
             </div>
           </CListGroupItem>
         ))}
       </CListGroup>
+      <Modal isOpen={isModalOpen} onClose={closeModal} content={selectedItem} />
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "@coreui/react";
 import { CIcon } from "@coreui/icons-react";
 import * as icon from "@coreui/icons";
-
+import { Link } from "react-router-dom";
 function Menu() {
   return (
     <CSidebar
@@ -22,10 +22,14 @@ function Menu() {
       </CSidebarHeader>
       <CSidebarNav>
         <CNavTitle>Navigation</CNavTitle>
-        <CNavItem href="#">
-          <CIcon customClassName="nav-icon" icon={icon.cilHome} />
-          Glowna
-        </CNavItem>
+        <Link to="/home" className="no-underline">
+          <CNavItem>
+            <span className="flex text-end w-full">
+              <CIcon customClassName="nav-icon" icon={icon.cilHome} />
+              <p>Glowna</p>
+            </span>
+          </CNavItem>
+        </Link>
         <CNavItem href="#">
           <CIcon customClassName="nav-icon" icon={icon.cilApps} /> Polecane
           <CBadge color="primary ms-auto">NEW</CBadge>
