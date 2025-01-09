@@ -26,8 +26,9 @@ import products from "./routes/products.js";
 // Użycie routerów
 app.use("/api/users", user);
 app.use("/api/latest", latest);
-app.use("/api/slider", slider);
+app.use("/api/slider", slider); // Slider dostępny publicznie
 app.use("/api/products", products);
+
 // Obsługa błędów
 app.use((err, req, res, next) => {
   console.error(err.stack);

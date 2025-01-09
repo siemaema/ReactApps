@@ -1,49 +1,56 @@
-import { useState, useEffect } from "react";
-import ProductsList from "./ProductsList";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // Importujemy useLocation
+import { useAppContext } from "../Contexts/AppContext";
+import ProductsList from "./ProductsList"; // Komponent wyświetlający produkty
 
 function ProductsListMap() {
-  const [data, setData] = useState([]); // Zmieniono na pustą tablicę
-  const [loading, setLoading] = useState(true); // Stan ładowania
-  const [error, setError] = useState(null); // Stan błędów
-
-  const API_URL = import.meta.env.VITE_API_URL;
+  const { filter } = useAppContext(); // Pobierz filter z kontekstu
+  const location = useLocation(); // Używamy useLocation do pobrania parametrów URL
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const searchQuery = new URLSearchParams(location.search).get("searchQuery"); // Pobieramy searchQuery z URL
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/products`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/products`
+        );
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error("Nie udało się pobrać produktów");
         }
-        const result = await response.json();
-        setData(result); // Ustaw dane
-      } catch (error) {
-        setError(error.message); // Ustaw błąd
+
+        // Filtrowanie produktów na podstawie searchQuery
+        const filteredData = data.filter((product) =>
+          searchQuery
+            ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Filtrowanie po nazwie
+            : true
+        );
+
+        setProducts(filteredData);
+      } catch (err) {
+        setError(err.message);
       } finally {
-        setLoading(false); // Ustaw zakończenie ładowania
+        setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [API_URL]);
+  }, [searchQuery, filter]); // Zależy od searchQuery i filter
 
-  if (loading) {
-    return <p>Ładowanie produktów...</p>;
-  }
-
-  if (error) {
-    return <p>Błąd: {error}</p>;
-  }
-
-  if (data.length === 0) {
-    return <p>Brak dostępnych produktów.</p>;
-  }
+  if (loading) return <div>Ładowanie...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="grid md:grid-cols-4 gap-4 ml-3">
-      {data.map((item, index) => (
-        <ProductsList content={item} id={item.id} key={item._id || index} />
-      ))}
+      {products.length > 0 ? (
+        products.map((item) => <ProductsList content={item} key={item._id} />)
+      ) : (
+        <p>Brak produktów pasujących do wyszukiwania.</p>
+      )}
     </div>
   );
 }

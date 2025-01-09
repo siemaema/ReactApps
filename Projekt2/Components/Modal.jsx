@@ -1,47 +1,68 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react/prop-types */
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Używamy useNavigate
 
-import { useNavigate } from "react-router-dom";
+function Modal({ content, onClose }) {
+  const navigate = useNavigate(); // Inicjalizujemy hook useNavigate
 
-function Modal({ isOpen, onClose, content }) {
-  const navigate = useNavigate();
-  if (!isOpen) return null;
+  // Zamknięcie modalnego okna klawiszem Escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
 
+  // Funkcja do przejścia na stronę produktu
   const handleNavigate = () => {
-    navigate(`/product/${content.id}`, { state: content }); // Poprawiona ścieżka
-    onClose(); // Opcjonalne zamknięcie modala po nawigacji
+    navigate(`/product/${content.name}`, { state: content }); // Przekierowanie na stronę produktu
+    onClose(); // Zamykamy modal po kliknięciu
   };
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1050]"
-      onClick={onClose}
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={onClose} // Zamknięcie po kliknięciu tła
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-lg w-3/4 relative z-[1060]"
-        onClick={(e) => e.stopPropagation()} // Zatrzymuje propagację kliknięcia, aby nie zamykać modala
+        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-screen overflow-y-auto"
+        onClick={(e) => e.stopPropagation()} // Zapobiega zamknięciu przy kliknięciu w treść modala
       >
-        <div className="grid grid-cols-2">
-          <span className="px-3">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              {content.title || "Tytuł produktu"}
-            </h2>
-            <p>{content.content || "Opis produktu"}</p>
-            <p>{"Opis kwota itd"}</p>
-          </span>
-          <img
-            src={content.image || "default-image.jpg"}
-            alt={content.title || "Zdjęcie produktu"}
-            className="w-full h-auto rounded-lg mt-4"
-          />
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          {content?.name || "Brak tytułu"}
+        </h2>
+        <img
+          src={content?.image || "default-image.jpg"}
+          alt={content?.name || "Zdjęcie produktu"}
+          className="w-full h-auto rounded-md mb-4"
+        />
+        <p className="text-gray-700 mb-6 text-center">
+          {content?.description || "Brak opisu produktu."}
+        </p>
+
+        {/* Przycisk Zamknij */}
+        <div className="text-right mt-4">
           <button
-            onClick={handleNavigate}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={onClose}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
           >
-            Zobacz więcej
+            Zamknij
           </button>
         </div>
-        <div className="flex justify-end mt-4"></div>
+
+        {/* Przycisk Przejdź do produktu */}
+        <div className="text-center mt-4">
+          <button
+            onClick={handleNavigate} // Przekierowanie na stronę produktu
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            Zobacz Produkt
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,74 +1,103 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../Contexts/AppContext"; // Używamy AppContext
 
-function LoginPage({ setLoggedIn }) {
+const API_URL = import.meta.env.VITE_API_URL;
+
+function LoginPage() {
+  const { setLoggedIn, setUser } = useAppContext(); // Funkcje z AppContext
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Zmiana stanu logowania
-    setLoggedIn(true);
+    try {
+      const response = await fetch(`${API_URL}/api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Nawigacja do strony głównej
-    navigate("/home");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Logowanie nie powiodło się.");
+      }
+
+      // Zapisz token w localStorage
+      localStorage.setItem("token", data.token);
+      // Ustaw status zalogowanego użytkownika i dane użytkownika w kontekście
+      setLoggedIn(true);
+      setUser(data.user);
+
+      navigate("/home"); // Przekierowanie na stronę główną
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-blue-500">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-400 to-indigo-600">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
+        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
           Zaloguj się
         </h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 font-medium mb-2"
-            >
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-gray-700 mb-2 text-lg">
               Email
             </label>
             <input
               type="email"
               id="email"
-              name="email"
-              placeholder="Wprowadź email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Wprowadź swój email"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="mb-4">
+
+          <div>
             <label
               htmlFor="password"
-              className="block text-gray-700 font-medium mb-2"
+              className="block text-gray-700 mb-2 text-lg"
             >
               Hasło
             </label>
             <input
               type="password"
               id="password"
-              name="password"
-              placeholder="Wprowadź hasło"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Wprowadź swoje hasło"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
           <button
             type="submit"
-            className="w-full bg-purple-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-600 transition duration-300"
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200"
           >
-            Zaloguj się
+            Zaloguj
           </button>
         </form>
-        <p className="text-center text-gray-600 mt-4">
-          Nie masz konta?{" "}
-          <a
-            href="/signup"
-            className="text-purple-500 font-semibold hover:underline"
+
+        {/* Przycisk do strony rejestracji */}
+        <div className="text-center mt-6">
+          <p className="text-gray-600 text-lg">Nie masz jeszcze konta?</p>
+          <button
+            onClick={() => navigate("/register")} // Przekierowanie do strony rejestracji
+            className="text-blue-600 hover:text-blue-700 text-lg font-semibold"
           >
             Zarejestruj się
-          </a>
-        </p>
+          </button>
+        </div>
       </div>
     </div>
   );

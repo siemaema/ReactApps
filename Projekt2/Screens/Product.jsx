@@ -1,9 +1,12 @@
 import { useLocation } from "react-router-dom";
 import NavBar from "../Components/NavBar";
+
 function Product() {
   const location = useLocation();
-  const product = location.state;
-  console.log(product);
+  const product = location.state; // Pobieramy dane produktu przekazane z modala
+
+  console.log(product); // Możesz usunąć, jeśli nie chcesz logować danych w konsoli
+
   return (
     <div className="container mx-auto p-6">
       <NavBar />
@@ -35,7 +38,6 @@ function Product() {
       </div>
 
       {/* Sekcja opinii */}
-
       <div className="mt-8 bg-gray-100 p-6 rounded-lg shadow-lg">
         {product.reviews ? (
           <>
@@ -55,7 +57,7 @@ function Product() {
             ))}
           </>
         ) : (
-          "Produkt jeszcze bez opinii"
+          <p>Produkt jeszcze bez opinii</p>
         )}
       </div>
     </div>

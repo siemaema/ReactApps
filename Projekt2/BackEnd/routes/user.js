@@ -1,9 +1,12 @@
-/* eslint-disable no-undef */
 import express from "express";
-import { getUsers } from "../controllers/userController.js";
+import { registerUser, loginUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.get("/", getUsers);
+// Endpoint rejestracji
+router.post("/register", registerUser);
 
-export default router; // Eksport domyślny routera
+// Endpoint logowania
+router.post("/login", loginUser);
+
+export default router;
