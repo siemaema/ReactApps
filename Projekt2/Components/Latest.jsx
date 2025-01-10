@@ -1,85 +1,61 @@
-import { CImage, CListGroup, CListGroupItem } from "@coreui/react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useAppContext } from "../Contexts/AppContext";
+import { CCard, CCardBody, CCardImage, CCardTitle } from "@coreui/react";
 import Modal from "./Modal";
 
-function Latest() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null); // null na początku
+const Latest = () => {
+  const { fetchLatestProducts } = useAppContext();
+  const [latestProducts, setLatestProducts] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  useEffect(() => {
+    const getLatestProducts = async () => {
+      try {
+        const data = await fetchLatestProducts();
+        setLatestProducts(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    getLatestProducts();
+  }, [fetchLatestProducts]);
 
-  const openModal = (item) => {
+  const handleOpenModal = (item) => {
     setSelectedItem(item);
   };
 
-  const closeModal = () => {
+  const handleCloseModal = () => {
     setSelectedItem(null);
   };
 
-  useEffect(() => {
-    const fetchLatest = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("Token JWT przesłany do backendu:", token);
-        const response = await fetch(`${API_URL}/api/products`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLatest();
-  }, [API_URL]);
-
-  if (loading) return <div className="text-center text-xl">Ładowanie...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
-
   return (
-    <div className="h-full my-auto">
-      <h1 className="text-center text-3xl font-bold my-4">
-        Ostatnio dodane produkty
-      </h1>
-      <CListGroup flush className="rounded-lg shadow-lg h-96 overflow-y-auto">
-        {data.map((item, index) => (
-          <CListGroupItem
-            key={index}
-            className="h-16 cursor-pointer hover:bg-gray-100 transition duration-200"
-            onClick={() => openModal(item)} // Otwiera modal
-          >
-            <div className="flex items-center gap-4 p-2">
-              <CImage
-                className="w-12 h-12 object-cover rounded-full"
-                src={item.image || "default-image.jpg"}
-                alt={item.name || "Produkt"}
-              />
-              <span className="text-lg text-gray-800">
-                {item.name || "Brak nazwy produktu"}
-              </span>
-            </div>
-          </CListGroupItem>
-        ))}
-      </CListGroup>
+    <div className="latest grid gap-4">
+      {latestProducts.map((product) => (
+        <CCard
+          key={product.id}
+          className="latest-item cursor-pointer hover:shadow-lg transition-shadow duration-300"
+          onClick={() => handleOpenModal(product)}
+        >
+          <CCardImage
+            orientation="top"
+            src={product.image}
+            alt={product.name}
+            className="h-20 object-cover"
+          />
+          <CCardBody>
+            <CCardTitle className="text-sm font-medium text-center">
+              {product.name}
+            </CCardTitle>
+          </CCardBody>
+        </CCard>
+      ))}
 
       {/* Modal */}
-      {selectedItem && <Modal content={selectedItem} onClose={closeModal} />}
+      {selectedItem && (
+        <Modal content={selectedItem} onClose={handleCloseModal} />
+      )}
     </div>
   );
-}
+};
 
 export default Latest;

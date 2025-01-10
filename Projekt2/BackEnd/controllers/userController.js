@@ -1,30 +1,43 @@
 import User from "../models/user.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // Rejestracja użytkownika
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
+    // Sprawdzenie, czy użytkownik już istnieje
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Użytkownik już istnieje." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hashowanie hasła
+    const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Tworzenie nowego użytkownika
     const newUser = new User({
-      name,
+      username,
       email,
       password: hashedPassword,
     });
 
+    // Zapis do kolekcji "Users"
     await newUser.save();
-    res.status(201).json({ message: "Rejestracja zakończona sukcesem." });
-  } catch (err) {
-    console.error("Błąd rejestracji:", err);
-    res.status(500).json({ message: "Wewnętrzny błąd serwera." });
+
+    // Generowanie tokena JWT
+    const token = jwt.sign(
+      { email: newUser.email, id: newUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({ user: newUser, token });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Coś poszło nie tak.", error: error.message });
   }
 };
 
@@ -33,32 +46,29 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Sprawdzenie, czy użytkownik istnieje
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Nieprawidłowy email lub hasło." });
+      return res.status(404).json({ message: "Użytkownik nie istnieje." });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ message: "Nieprawidłowy email lub hasło." });
+    // Weryfikacja hasła
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Nieprawidłowe hasło." });
     }
 
+    // Generowanie tokena JWT
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { email: user.email, id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({
-      user: { email: user.email, name: user.name },
-      token,
-    });
-  } catch (err) {
-    console.error("Błąd logowania:", err);
-    res.status(500).json({ message: "Wewnętrzny błąd serwera." });
+    res.status(200).json({ user, token });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Coś poszło nie tak.", error: error.message });
   }
 };

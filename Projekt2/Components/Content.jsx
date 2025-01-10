@@ -1,23 +1,21 @@
-import Latest from "./Latest";
+import React from "react";
 import Slider from "./Slider";
-import { useAppContext } from "../Contexts/AppContext";
+import Latest from "./Latest";
 
-function Content() {
-  const { loggedIn } = useAppContext();
-
+const Content = () => {
   return (
-    <div className="flex bg-white p-4 rounded-lg shadow-md w-full h-auto gap-2">
-      {/* Warunkowe klasy w zależności od statusu zalogowania */}
-      <div className={loggedIn ? "w-3/4" : "w-full"}>
+    <div className="content-container flex flex-row h-96 bg-white rounded-lg overflow-hidden mx-2">
+      {/* Slider */}
+      <div className="slider-container flex-1 h-full">
         <Slider />
       </div>
-      {loggedIn && (
-        <div className="w-1/4">
-          <Latest />
-        </div>
-      )}
+
+      {/* Latest Products */}
+      <div className="latest-container w-1/4 h-full overflow-y-auto bg-gray-100 px-4">
+        <Latest />
+      </div>
     </div>
   );
-}
+};
 
 export default Content;

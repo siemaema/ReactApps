@@ -3,10 +3,10 @@ import { registerUser, loginUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
-// Endpoint rejestracji
+// Trasa do rejestracji użytkownika
 router.post("/register", registerUser);
 
-// Endpoint logowania
+// Trasa do logowania użytkownika
 router.post("/login", loginUser);
 
 export default router;

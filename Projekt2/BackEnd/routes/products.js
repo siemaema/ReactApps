@@ -1,7 +1,18 @@
-/* eslint-disable no-undef */
 import express from "express";
-import { getProducts } from "../controllers/productsController.js";
+import {
+  getAllProducts,
+  getSliderProducts,
+  getLatestProducts,
+  addProduct,
+  deleteProduct,
+} from "../controllers/productsController.js";
 
-const products = express.Router();
-products.get("/", getProducts);
-export default products;
+const router = express.Router();
+
+router.get("/", getAllProducts);
+router.get("/slider", getSliderProducts);
+router.get("/latest", getLatestProducts);
+router.post("/", addProduct);
+router.delete("/:id", deleteProduct);
+
+export default router;

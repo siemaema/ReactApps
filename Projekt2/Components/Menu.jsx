@@ -58,7 +58,7 @@ function Menu() {
         >
           <Link to="/shop/categories/farby" className="no-underline">
             <CNavItem
-              onClick={() => handleCategorySelect("Farby")} // Przypisanie kategorii do kontekstu
+              onClick={() => handleCategorySelect("Farby")}
               className="hover:bg-blue-500 text-white rounded-md py-2 px-2 transition duration-300 ease-in-out"
             >
               <span className="flex items-center gap-3">
@@ -80,7 +80,7 @@ function Menu() {
           </Link>
           <Link to="/shop/categories/akcesoria" className="no-underline">
             <CNavItem
-              onClick={() => handleCategorySelect("Akcesoria")}
+              onClick={() => handleCategorySelect("Artykuły samochodowe")}
               className="hover:bg-blue-500 text-white rounded-md py-2 px-2 transition duration-300 ease-in-out"
             >
               <span className="flex items-center gap-3">
