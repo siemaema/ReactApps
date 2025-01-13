@@ -16,16 +16,15 @@ import { useAppContext } from "../Contexts/AppContext";
 
 const Admin = () => {
   const {
-    users = [], // Domyślnie pusta tablica
-    products = [], // Domyślnie pusta tablica
-    orders = [], // Domyślnie pusta tablica
+    users = [],
+    products = [],
     fetchAllAdminData,
     loading,
     error,
   } = useAppContext();
 
   useEffect(() => {
-    fetchAllAdminData(); // Pobieramy dane przy renderowaniu komponentu
+    fetchAllAdminData();
   }, []);
 
   if (loading) {
@@ -83,6 +82,7 @@ const Admin = () => {
                   <CTableHeaderCell>Nazwa</CTableHeaderCell>
                   <CTableHeaderCell>Kategoria</CTableHeaderCell>
                   <CTableHeaderCell>Cena</CTableHeaderCell>
+                  <CTableHeaderCell>Ilość w magazynie</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -92,6 +92,7 @@ const Admin = () => {
                     <CTableDataCell>{product.name}</CTableDataCell>
                     <CTableDataCell>{product.category}</CTableDataCell>
                     <CTableDataCell>{product.price} zł</CTableDataCell>
+                    <CTableDataCell>{product.quantity}</CTableDataCell>
                   </CTableRow>
                 ))}
               </CTableBody>
@@ -100,28 +101,35 @@ const Admin = () => {
 
           <CTabPanel className="p-4 h-full" itemKey="orders">
             <h2 className="text-xl font-bold mb-4">Zarządzanie zamówieniami</h2>
-            <CTable hover>
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell>ID Zamówienia</CTableHeaderCell>
-                  <CTableHeaderCell>Suma</CTableHeaderCell>
-                  <CTableHeaderCell>Data</CTableHeaderCell>
-                  <CTableHeaderCell>Metoda dostawy</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {orders.map((order) => (
-                  <CTableRow key={order._id}>
-                    <CTableDataCell>{order._id}</CTableDataCell>
-                    <CTableDataCell>{order.totalPrice} zł</CTableDataCell>
-                    <CTableDataCell>
-                      {new Date(order.date).toLocaleString()}
-                    </CTableDataCell>
-                    <CTableDataCell>{order.deliveryMethod}</CTableDataCell>
-                  </CTableRow>
-                ))}
-              </CTableBody>
-            </CTable>
+            {users.map((user) => (
+              <div key={user._id} className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800">
+                  Użytkownik: {user.username} ({user.email})
+                </h3>
+                <CTable hover>
+                  <CTableHead>
+                    <CTableRow>
+                      <CTableHeaderCell>ID Zamówienia</CTableHeaderCell>
+                      <CTableHeaderCell>Suma</CTableHeaderCell>
+                      <CTableHeaderCell>Data</CTableHeaderCell>
+                      <CTableHeaderCell>Metoda dostawy</CTableHeaderCell>
+                    </CTableRow>
+                  </CTableHead>
+                  <CTableBody>
+                    {user.orders.map((order) => (
+                      <CTableRow key={order._id}>
+                        <CTableDataCell>{order._id}</CTableDataCell>
+                        <CTableDataCell>{order.totalPrice} zł</CTableDataCell>
+                        <CTableDataCell>
+                          {new Date(order.date).toLocaleString()}
+                        </CTableDataCell>
+                        <CTableDataCell>{order.deliveryMethod}</CTableDataCell>
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
+                </CTable>
+              </div>
+            ))}
           </CTabPanel>
         </CTabContent>
       </CTabs>

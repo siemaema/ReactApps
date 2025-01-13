@@ -9,7 +9,7 @@ import {
   removeFromCart,
   updateCart,
 } from "../controllers/userController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, admin } from "../middleware/authMiddleware.js";
 import User from "../models/user.js";
 
 const router = express.Router();
@@ -142,6 +142,18 @@ router.delete("/cart/clear", protect, async (req, res) => {
   } catch (error) {
     console.error("Error clearing cart:", error);
     res.status(500).json({ message: "Failed to clear cart.", error });
+  }
+});
+
+router.get("/all", protect, admin, async (req, res) => {
+  try {
+    // Pobieramy wszystkich użytkowników wraz z ich zamówieniami
+    const users = await User.find().populate("orders.items.product");
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Błąd pobierania użytkowników z zamówieniami:", error);
+    res.status(500).json({ message: "Nie udało się pobrać użytkowników." });
   }
 });
 

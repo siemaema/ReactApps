@@ -14,7 +14,7 @@ export const AppProvider = ({ children }) => {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [users, setUsers] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL;
 
   // Decode token and set user
@@ -244,9 +244,48 @@ export const AppProvider = ({ children }) => {
   const updateUserProfile = (updatedUser) => {
     setUser(updatedUser);
   };
+
+  const fetchAllAdminData = async () => {
+    try {
+      setLoading(true);
+
+      const [usersResponse, productsResponse] = await Promise.all([
+        fetch(`${API_URL}/api/users/all`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }),
+        fetch(`${API_URL}/api/products/all`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }),
+      ]);
+
+      if (!usersResponse.ok || !productsResponse.ok) {
+        throw new Error("Nie udało się pobrać wszystkich danych.");
+      }
+
+      const [usersData, productsData] = await Promise.all([
+        usersResponse.json(),
+        productsResponse.json(),
+      ]);
+
+      setUsers(usersData);
+      setProducts(productsData);
+    } catch (error) {
+      console.error("Błąd pobierania danych administratora:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
+        users,
+        fetchAllAdminData,
         API_URL,
         setCart,
         updateUserProfile,
