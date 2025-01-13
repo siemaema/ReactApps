@@ -20,7 +20,7 @@ function NavBar() {
   const handleLogout = () => {
     logoutUser(navigate); // Przekazujemy `navigate` do funkcji wylogowania
   };
-  console.log(user);
+
   return (
     <nav className="bg-gray-900 text-white shadow-md rounded-lg flex items-center justify-between  ">
       {/* Logo */}
@@ -85,7 +85,7 @@ function NavBar() {
                     className="w-full text-left px-4 py-2 hover:bg-gray-100"
                     onClick={() => {
                       setDropdownVisible(false);
-                      navigate("/history");
+                      navigate("/orders");
                     }}
                   >
                     Historia

@@ -16,6 +16,6 @@ router.get("/slider", getSliderProducts);
 router.get("/latest", getLatestProducts);
 router.post("/", addProduct);
 router.delete("/:id", deleteProduct);
-router.post("/comment", protect, addComment);
+router.post("/:id/comment", protect, addComment);
 router.get("/filter", filterProducts);
 export default router;

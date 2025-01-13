@@ -41,6 +41,17 @@ const LoginPage = () => {
             Zaloguj się
           </CButton>
         </CForm>
+        <span>
+          <p>Nie masz jeszcze konta ?</p>
+          <CButton
+            type="button"
+            color="primary"
+            onClick={() => navigate("/register")}
+            className="w-full"
+          >
+            Zarejestruj się
+          </CButton>
+        </span>
       </div>
     </div>
   );

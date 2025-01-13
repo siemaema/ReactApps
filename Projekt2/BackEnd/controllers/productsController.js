@@ -1,5 +1,5 @@
 import Product from "../models/products.js";
-
+import mongoose from "mongoose";
 // Pobranie wszystkich produktów
 export const getAllProducts = async (req, res) => {
   try {
@@ -76,37 +76,45 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// Dodanie komentarza do produktu
 export const addComment = async (req, res) => {
-  const { id, text, stars, username } = req.body;
+  const { text, stars } = req.body; // Tekst i ocena z żądania
+  const { id } = req.params; // ID produktu z URL
+  const username = req.user?.username || "Anonim"; // Nazwa użytkownika z JWT lub domyślnie "Anonim"
 
-  if (!id || !text || !stars || !username) {
+  if (!text || !stars) {
     return res.status(400).json({ message: "Wszystkie pola są wymagane." });
   }
 
   try {
-    const product = await Product.findOne({ id });
+    // Sprawdź, czy ID produktu jest poprawne
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Nieprawidłowe ID produktu." });
+    }
+
+    // Znajdź produkt po ID
+    const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Produkt nie znaleziony." });
     }
 
+    // Utwórz nowy komentarz
     const comment = {
       username,
       text,
-      stars: Math.min(5, Math.max(1, stars)), // Ensure stars are between 1 and 5
+      stars: Math.min(5, Math.max(1, stars)), // Ogranicz oceny do zakresu 1-5
       createdAt: new Date(),
     };
 
+    // Dodaj komentarz do produktu
     product.comments.push(comment);
     await product.save();
 
-    res.status(200).json({ message: "Komentarz dodany.", product });
+    res.status(201).json({ message: "Komentarz dodany.", comment });
   } catch (error) {
-    console.error("Błąd dodawania komentarza:", error);
+    console.error("Błąd podczas dodawania komentarza:", error);
     res.status(500).json({ message: "Błąd serwera.", error });
   }
 };
-
 // Aktualizacja dostępności produktu
 export const updateProductStock = async (req, res) => {
   const { productId, quantity } = req.body;

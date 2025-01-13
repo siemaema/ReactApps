@@ -262,3 +262,46 @@ export const updateCart = async (req, res) => {
       .json({ message: "Nie udało się zaktualizować koszyka.", error });
   }
 };
+export const placeOrder = async (req, res) => {
+  const { items, totalPrice, deliveryMethod } = req.body;
+
+  // Check for required fields
+  if (
+    !items ||
+    !Array.isArray(items) ||
+    items.length === 0 ||
+    !totalPrice ||
+    !deliveryMethod
+  ) {
+    return res.status(400).json({ message: "Invalid order payload." });
+  }
+
+  // Validate items
+  if (items.some((item) => !item.product || !item.quantity)) {
+    return res
+      .status(400)
+      .json({ message: "Each item must include a product and quantity." });
+  }
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const order = {
+      items,
+      totalPrice,
+      deliveryMethod,
+      date: new Date(),
+    };
+
+    user.orders.push(order);
+    await user.save();
+
+    res.status(201).json({ message: "Order placed successfully.", order });
+  } catch (error) {
+    console.error("Error placing order:", error);
+    res.status(500).json({ message: "Failed to place order.", error });
+  }
+};

@@ -4,12 +4,11 @@ import { useAppContext } from "../Contexts/AppContext";
 import Layout from "./Layout";
 
 const Cart = () => {
-  const { loggedIn } = useAppContext();
+  const { loggedIn, setCart } = useAppContext();
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Pobieranie zawartości koszyka
     if (loggedIn) {
       fetch(`${import.meta.env.VITE_API_URL}/api/users/cart`, {
         method: "GET",
@@ -23,11 +22,15 @@ const Cart = () => {
           }
           return res.json();
         })
-        .then((data) => setCartItems(data))
+        .then((data) => {
+          setCartItems(data); // Update local state
+          setCart(data); // Sync with AppContext's cart state
+        })
         .catch((err) => console.error("Błąd pobierania koszyka:", err));
     } else {
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       setCartItems(localCart);
+      setCart(localCart); // Sync with AppContext's cart state
     }
   }, [loggedIn]);
 
@@ -98,7 +101,7 @@ const Cart = () => {
       alert("Musisz się zalogować, aby sfinalizować zakup.");
       navigate("/login");
     } else {
-      alert("Proces zakupu w budowie...");
+      navigate("/finalize");
     }
   };
 

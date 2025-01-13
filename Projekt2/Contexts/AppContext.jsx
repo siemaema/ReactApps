@@ -67,31 +67,49 @@ export const AppProvider = ({ children }) => {
   };
 
   // Add item to cart
-  const addToCart = async (productId, quantity) => {
-    if (!loggedIn) {
-      console.error("User is not logged in.");
-      return;
-    }
-
+  const addToCart = async (product, quantity) => {
     try {
-      const response = await fetch(`${API_URL}/api/users/cart/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ productId, quantity }),
-      });
+      if (loggedIn) {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/users/cart/add`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ productId: product._id, quantity }),
+          }
+        );
 
-      const data = await response.json();
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || "Failed to add to cart");
+        }
 
-      if (!response.ok) {
-        throw new Error(data.message);
+        const { cart } = await response.json();
+        setCart(cart); // Update cart in the context
+        alert(`${quantity} x ${product.name} added to cart!`);
+      } else {
+        // Handle local cart for unauthenticated users
+        const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+        const existingItem = localCart.find(
+          (item) => item.product._id === product._id
+        );
+
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          localCart.push({ product, quantity });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(localCart));
+        setCart(localCart);
+        alert(`${quantity} x ${product.name} added to cart!`);
       }
-
-      setCart(data.cart); // Update cart state
-    } catch (err) {
-      console.error("Error adding to cart:", err.message);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add to cart.");
     }
   };
 
@@ -121,21 +139,29 @@ export const AppProvider = ({ children }) => {
 
   // Clear cart
   const clearCart = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/users/cart/clear`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    if (loggedIn) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/users/cart/clear`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to clear cart.");
+        if (!response.ok) {
+          throw new Error("Failed to clear cart.");
+        }
+
+        setCart([]);
+      } catch (error) {
+        console.error("Error clearing cart:", error);
       }
-
+    } else {
+      localStorage.removeItem("cart");
       setCart([]);
-    } catch (err) {
-      console.error("Error clearing cart:", err.message);
     }
   };
 
@@ -221,6 +247,7 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
+        setCart,
         updateUserProfile,
         addToCart,
         removeFromCart,

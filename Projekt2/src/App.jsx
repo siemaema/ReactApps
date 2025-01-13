@@ -21,6 +21,8 @@ import UserProfile from "../Screens/UserProfile";
 import Cart from "../Screens/Cart";
 import AdminRoute from "../Components/AdminRoute";
 import Admin from "../Screens/Admin";
+import UserOrders from "../Screens/UserOrders";
+import FinalizeOrder from "../Screens/FinalizeOrder";
 
 const App = () => {
   return (
@@ -35,6 +37,8 @@ const App = () => {
           <Route path="/shop/categories/:category" element={<Products />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/orders" element={<UserOrders />} />
+          <Route path="/finalize" element={<FinalizeOrder />} />
           <Route
             path="/admin"
             element={

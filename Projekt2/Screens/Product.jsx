@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useAppContext } from "../Contexts/AppContext";
-
 import Layout from "./Layout";
+
 const Product = () => {
   const { id } = useParams();
   const { products, fetchProducts, loggedIn, addToCart, user } =
@@ -15,20 +15,86 @@ const Product = () => {
   const [rating, setRating] = useState(5);
   const [comments, setComments] = useState([]);
 
+  // Fetch products if not already loaded
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts();
     }
   }, [products.length, fetchProducts]);
 
-  const product = productFromState || products.find((p) => String(p.id) === id);
+  // Find the product by id
+  const product =
+    productFromState || products.find((p) => String(p._id) === id);
 
+  // Set comments when the product is available
   useEffect(() => {
     if (product) {
       setComments(product.comments || []);
     }
   }, [product]);
 
+  // Handle quantity change
+  const handleQuantityChange = (e) => {
+    const value = Math.max(
+      1,
+      Math.min(product.quantity, Number(e.target.value))
+    );
+    setQuantity(value);
+  };
+
+  // Add to cart functionality
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    alert(`${quantity} x ${product.name} dodano do koszyka`);
+  };
+
+  // Add comment functionality
+  const handleAddComment = async () => {
+    if (!loggedIn) {
+      alert("Musisz być zalogowany, aby dodać komentarz.");
+      return;
+    }
+
+    if (!comment.trim()) {
+      alert("Komentarz nie może być pusty.");
+      return;
+    }
+
+    const payload = {
+      text: comment, // Tekst komentarza
+      stars: rating, // Ocena w gwiazdkach
+    };
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products/${product._id}/comment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Nie udało się dodać komentarza.");
+      }
+
+      const data = await response.json();
+      alert("Komentarz dodany!");
+      setComments((prev) => [...prev, data.comment]); // Dodaj nowy komentarz do stanu
+      setComment(""); // Wyczyść pole komentarza
+      setRating(5); // Resetuj ocenę
+    } catch (error) {
+      console.error("Błąd dodawania komentarza:", error.message);
+      alert(error.message);
+    }
+  };
+
+  // If the product is not found
   if (!product) {
     return (
       <div className="product-not-found flex items-center justify-center h-screen">
@@ -39,68 +105,6 @@ const Product = () => {
     );
   }
 
-  const handleQuantityChange = (e) => {
-    const value = Math.max(
-      1,
-      Math.min(product.quantity, Number(e.target.value))
-    );
-    setQuantity(value);
-  };
-
-  const handleAddToCart = () => {
-    addToCart(product, quantity);
-    alert(`${quantity} x ${product.name} dodano do koszyka`);
-  };
-
-  const handleAddComment = async () => {
-    if (!comment.trim()) {
-      alert("Komentarz nie może być pusty.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/products/comment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            id: product.id, // Pass the product ID
-            text: comment, // The comment text
-            stars: rating, // The star rating
-            username: user.username, // Pass the logged-in user's username
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Komentarz dodany!");
-        setComments((prev) => [
-          ...prev,
-          {
-            username: user.username,
-            text: comment,
-            stars: rating,
-            createdAt: new Date(),
-          },
-        ]);
-        setComment(""); // Clear the comment box
-        setRating(5); // Reset the rating
-      } else {
-        alert(data.message || "Nie udało się dodać komentarza.");
-      }
-    } catch (error) {
-      console.error("Błąd dodawania komentarza:", error);
-      alert("Błąd dodawania komentarza.");
-    }
-  };
-
-  console.log(comments);
   return (
     <Layout>
       <div className="product-page container mx-auto p-4">
@@ -150,7 +154,7 @@ const Product = () => {
               comments.map((comment, index) => (
                 <div
                   key={index}
-                  className={`p-4 bg-gray-100 rounded-lg shadow-sm`}
+                  className="p-4 bg-gray-100 rounded-lg shadow-sm"
                 >
                   <p className="text-gray-800 font-semibold">
                     {comment.username}

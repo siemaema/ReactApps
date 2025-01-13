@@ -4,7 +4,7 @@ import { useAppContext } from "../Contexts/AppContext";
 
 function Modal({ content, onClose }) {
   const navigate = useNavigate();
-  const { addToCart } = useAppContext(); // Funkcja do dodawania do koszyka
+  const { addToCart, loggedIn } = useAppContext(); // Funkcja do dodawania do koszyka
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -57,6 +57,7 @@ function Modal({ content, onClose }) {
             Zobacz Produkt
           </button>
           <button
+            disabled={loggedIn ? false : true}
             onClick={handleAddToCart}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
           >
