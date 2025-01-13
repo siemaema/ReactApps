@@ -32,7 +32,7 @@ const Slider = () => {
   const handleCloseModal = () => {
     setSelectedItem(null);
   };
-  console.log(sliderProducts);
+
   return (
     <div className="flex flex-col w-full h-full bg-white rounded-lg">
       <CCarousel controls>

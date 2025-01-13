@@ -17,6 +17,10 @@ import LoginPage from "../Screens/LoginPage";
 import RegisterPage from "../Screens/RegisterPage";
 import Product from "../Screens/Product";
 import Products from "../Screens/Products";
+import UserProfile from "../Screens/UserProfile";
+import Cart from "../Screens/Cart";
+import AdminRoute from "../Components/AdminRoute";
+import Admin from "../Screens/Admin";
 
 const App = () => {
   return (
@@ -29,6 +33,16 @@ const App = () => {
           <Route path="/product/:id" element={<Product />} />
           <Route path="/shop" element={<Products />} />
           <Route path="/shop/categories/:category" element={<Products />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

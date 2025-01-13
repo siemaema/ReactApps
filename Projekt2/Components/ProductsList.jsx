@@ -5,9 +5,10 @@ import {
   CCardImage,
   CCardTitle,
   CCardText,
+  CButton,
 } from "@coreui/react";
 
-const ProductsList = ({ content }) => {
+const ProductsList = ({ content, onOpenModal }) => {
   return (
     <CCard key={content.id} className="product-item grid grid-cols-2 gap-4">
       <div className="col-span-1">
@@ -24,9 +25,18 @@ const ProductsList = ({ content }) => {
         <CCardText className="text-gray-700 mb-2">
           {content.description}
         </CCardText>
-        <CCardText className="text-lg font-semibold">
-          Cena: {content.price} zł
-        </CCardText>
+        <div className="flex items-center justify-between">
+          <CCardText className="text-lg font-semibold">
+            Cena: {content.price} zł
+          </CCardText>
+          <CButton
+            color="primary"
+            size="sm"
+            onClick={() => onOpenModal(content)} // Wywołanie funkcji z przekazanym produktem
+          >
+            Szczegóły
+          </CButton>
+        </div>
       </CCardBody>
     </CCard>
   );

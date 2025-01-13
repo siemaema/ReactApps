@@ -1,32 +1,65 @@
 import User from "../models/user.js";
+import Product from "../models/products.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 
-// Rejestracja użytkownika
+// Konfiguracja multer do obsługi plików
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+
+const upload = multer({ storage });
+
+export const uploadImage = [
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Nie przesłano pliku." });
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { image: `/uploads/${req.file.filename}` },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: "Użytkownik nie znaleziony." });
+      }
+
+      res.status(200).json({ image: `/uploads/${req.file.filename}` });
+    } catch (error) {
+      res.status(500).json({
+        message: "Błąd podczas przesyłania pliku.",
+        error: error.message,
+      });
+    }
+  },
+];
+
 export const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    // Sprawdzenie, czy użytkownik już istnieje
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Użytkownik już istnieje." });
     }
 
-    // Hashowanie hasła
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Tworzenie nowego użytkownika
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
+      role: "user",
     });
 
-    // Zapis do kolekcji "Users"
     await newUser.save();
 
-    // Generowanie tokena JWT
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id },
       process.env.JWT_SECRET,
@@ -41,34 +74,191 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Logowanie użytkownika
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Sprawdzenie, czy użytkownik istnieje
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({ message: "Użytkownik nie istnieje." });
     }
 
-    // Weryfikacja hasła
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Nieprawidłowe hasło." });
     }
 
-    // Generowanie tokena JWT
     const token = jwt.sign(
-      { email: user.email, id: user._id },
+      { email: user.email, id: user._id, role: user.role }, // Dodano `role` do tokena
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     res.status(200).json({ user, token });
   } catch (error) {
+    console.error("Błąd logowania:", error);
+    res.status(500).json({ message: "Wewnętrzny błąd serwera." });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { username, email, password, address, image } = req.body;
+
+    const updatedFields = { username, email, address, image };
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      updatedFields.password = hashedPassword;
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updatedFields, {
+      new: true,
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie znaleziony." });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({
+      message: "Nie udało się zaktualizować użytkownika.",
+      error: err.message,
+    });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie znaleziony." });
+    }
+    res.status(200).json(user);
+  } catch (error) {
     res
       .status(500)
       .json({ message: "Coś poszło nie tak.", error: error.message });
+  }
+};
+
+// Funkcje dotyczące koszyka
+
+export const addToCart = async (req, res) => {
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id).populate("cart.product");
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: "Produkt nie istnieje." });
+    }
+
+    if (product.quantity < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Niewystarczająca ilość produktu." });
+    }
+
+    const cartItem = user.cart.find(
+      (item) => item.product.toString() === productId
+    );
+
+    if (cartItem) {
+      cartItem.quantity += quantity;
+    } else {
+      user.cart.push({ product: productId, quantity });
+    }
+
+    await user.save();
+
+    res.status(200).json(user.cart);
+  } catch (err) {
+    res.status(500).json({
+      message: "Błąd podczas dodawania do koszyka.",
+      error: err.message,
+    });
+  }
+};
+
+export const removeFromCart = async (req, res) => {
+  const { productId } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie istnieje." });
+    }
+
+    user.cart = user.cart.filter(
+      (item) => item.product.toString() !== productId
+    );
+
+    await user.save();
+
+    res.status(200).json(user.cart);
+  } catch (error) {
+    res.status(500).json({ message: "Nie udało się usunąć produktu.", error });
+  }
+};
+
+export const getCart = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate(
+      "cart.product",
+      "name price image quantity"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie istnieje." });
+    }
+
+    res.status(200).json(user.cart);
+  } catch (error) {
+    res.status(500).json({ message: "Nie udało się pobrać koszyka.", error });
+  }
+};
+
+export const updateCart = async (req, res) => {
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie istnieje." });
+    }
+
+    const item = user.cart.find(
+      (item) => item.product.toString() === productId
+    );
+
+    if (!item) {
+      return res
+        .status(404)
+        .json({ message: "Produkt nie znaleziony w koszyku." });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product || quantity > product.quantity) {
+      return res
+        .status(400)
+        .json({ message: "Nie można ustawić więcej niż dostępna ilość." });
+    }
+
+    item.quantity = quantity;
+
+    await user.save();
+
+    res.status(200).json(user.cart);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Nie udało się zaktualizować koszyka.", error });
   }
 };

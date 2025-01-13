@@ -6,14 +6,11 @@ import { CForm, CFormInput, CButton, CAlert } from "@coreui/react";
 const LoginPage = () => {
   const { loginUser, error } = useAppContext();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Pobierz funkcję `navigate`
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await loginUser(credentials);
-    if (!error) {
-      navigate("/");
-    }
+    await loginUser(credentials, navigate); // Przekaż `navigate` do `loginUser`
   };
 
   return (

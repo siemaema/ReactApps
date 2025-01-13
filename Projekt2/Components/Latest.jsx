@@ -30,6 +30,7 @@ const Latest = () => {
 
   return (
     <div className="latest grid gap-4">
+      <h3 className="font-bold text-center mt-2">Ostatnio dodane</h3>
       {latestProducts.map((product) => (
         <CCard
           key={product.id}

@@ -4,22 +4,26 @@ import {
   CSidebarBrand,
   CSidebarNav,
   CNavItem,
-  CBadge,
   CNavGroup,
 } from "@coreui/react";
 import { CIcon } from "@coreui/icons-react";
 import * as icon from "@coreui/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../Contexts/AppContext";
 
 function Menu() {
-  const { setCategory } = useAppContext(); // Używamy funkcji setCategory z kontekstu
+  const { setCategory, loggedIn } = useAppContext(); // Używamy funkcji setCategory z kontekstu
+  const navigate = useNavigate(); // useNavigate for programmatic navigation
 
-  // Funkcja do ustawiania kategorii
-  const handleCategorySelect = (category) => {
+  // Funkcja do ustawiania kategorii i nawigacji
+  const handleCategorySelect = (category, path) => {
     setCategory(category); // Ustawienie kategorii w kontekście
+    navigate(path); // Navigate to the selected category path
   };
-
+  const handleShop = () => {
+    setCategory(null);
+    navigate("/shop");
+  };
   return (
     <CSidebar
       className="border-end rounded-md h-full overflow-y-auto bg-dark text-white"
@@ -31,22 +35,33 @@ function Menu() {
         </CSidebarBrand>
       </CSidebarHeader>
       <CSidebarNav>
-        <Link to="/home" className="no-underline">
-          <CNavItem className="hover:bg-blue-600 text-white rounded-md py-3 px-2 transition duration-300 ease-in-out">
+        {/* Home Link */}
+        <CNavItem>
+          <button
+            className="hover:bg-blue-600 text-white w-full rounded-md py-3 px-2 transition duration-300 ease-in-out"
+            onClick={() => navigate("/")}
+          >
             <span className="flex items-center gap-3 text-lg">
               <CIcon customClassName="nav-icon" icon={icon.cilHome} />
               <span>Główna</span>
             </span>
-          </CNavItem>
-        </Link>
-        <Link to="/shop" className="no-underline">
-          <CNavItem className="hover:bg-blue-600 text-white rounded-md py-3 px-2 transition duration-300 ease-in-out">
+          </button>
+        </CNavItem>
+
+        {/* Products Link */}
+        <CNavItem>
+          <button
+            className="hover:bg-blue-600 text-white w-full rounded-md py-3 px-2 transition duration-300 ease-in-out"
+            onClick={() => handleShop()}
+          >
             <span className="flex items-center gap-3 text-lg">
               <CIcon customClassName="nav-icon" icon={icon.cilApps} />
               <span>Produkty</span>
             </span>
-          </CNavItem>
-        </Link>
+          </button>
+        </CNavItem>
+
+        {/* Categories Dropdown */}
         <CNavGroup
           toggler={
             <span className="flex gap-3 text-lg">
@@ -56,40 +71,65 @@ function Menu() {
           }
           className="text-white rounded-md transition duration-300 ease-in-out hover:bg-blue-600"
         >
-          <Link to="/shop/categories/farby" className="no-underline">
-            <CNavItem
-              onClick={() => handleCategorySelect("Farby")}
-              className="hover:bg-blue-500 text-white rounded-md py-2 px-2 transition duration-300 ease-in-out"
+          {/* Categories Links */}
+          <CNavItem>
+            <button
+              className="hover:bg-blue-600 text-white w-full rounded-md py-3 px-2 transition duration-300 ease-in-out"
+              onClick={() =>
+                handleCategorySelect("Farby", "/shop/categories/farby")
+              }
             >
               <span className="flex items-center gap-3">
                 <CIcon customClassName="nav-icon" icon={icon.cilPaint} />
                 <span>Farby</span>
               </span>
-            </CNavItem>
-          </Link>
-          <Link to="/shop/categories/lakiery" className="no-underline">
-            <CNavItem
-              onClick={() => handleCategorySelect("Lakiery")}
-              className="hover:bg-blue-500 text-white rounded-md py-2 px-2 transition duration-300 ease-in-out"
+            </button>
+          </CNavItem>
+          <CNavItem>
+            <button
+              className="hover:bg-blue-500 text-white rounded-md w-full py-2 px-2 transition duration-300 ease-in-out"
+              onClick={() =>
+                handleCategorySelect("Lakiery", "/shop/categories/lakiery")
+              }
             >
               <span className="flex items-center gap-3">
                 <CIcon customClassName="nav-icon" icon={icon.cilBrush} />
                 <span>Lakiery</span>
               </span>
-            </CNavItem>
-          </Link>
-          <Link to="/shop/categories/akcesoria" className="no-underline">
-            <CNavItem
-              onClick={() => handleCategorySelect("Artykuły samochodowe")}
-              className="hover:bg-blue-500 text-white rounded-md py-2 px-2 transition duration-300 ease-in-out"
+            </button>
+          </CNavItem>
+          <CNavItem>
+            <button
+              className="hover:bg-blue-500 text-white w-full rounded-md py-2 px-2 transition duration-300 ease-in-out"
+              onClick={() =>
+                handleCategorySelect(
+                  "Artykuły samochodowe",
+                  "/shop/categories/akcesoria"
+                )
+              }
             >
               <span className="flex items-center gap-3">
                 <CIcon customClassName="nav-icon" icon={icon.cilBasket} />
                 <span>Akcesoria</span>
               </span>
-            </CNavItem>
-          </Link>
+            </button>
+          </CNavItem>
         </CNavGroup>
+        {loggedIn ? (
+          <CNavItem>
+            <button
+              className="hover:bg-blue-500 text-white w-full rounded-md py-2 px-2 transition duration-300 ease-in-out"
+              onClick={() => navigate("/cart")}
+            >
+              <span className="flex items-center gap-3">
+                <CIcon customClassName="nav-icon" icon={icon.cilBasket} />
+                <span>Koszyk</span>
+              </span>
+            </button>
+          </CNavItem>
+        ) : (
+          ""
+        )}
       </CSidebarNav>
     </CSidebar>
   );

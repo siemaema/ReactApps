@@ -1,17 +1,29 @@
 import jwt from "jsonwebtoken";
+import User from "../models/user.js";
 
-export const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+export const protect = async (req, res, next) => {
+  let token;
 
-  if (!token) {
-    return res.status(401).json({ message: "Brak tokena, brak autoryzacji" });
-  }
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(403).json({ message: "Nieprawidłowy lub wygasły token" });
+      // Fetch the user and attach to req.user
+      req.user = await User.findById(decoded.id).select("username email");
+      if (!req.user) {
+        return res.status(401).json({ message: "Nieautoryzowany dostęp." });
+      }
+
+      next();
+    } catch (error) {
+      console.error("Błąd z tokenem:", error);
+      res.status(401).json({ message: "Nieautoryzowany dostęp." });
+    }
+  } else {
+    res.status(401).json({ message: "Brak tokena." });
   }
 };
