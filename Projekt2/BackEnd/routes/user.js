@@ -76,6 +76,23 @@ router.delete("/cart/remove", protect, removeFromCart);
 // Aktualizacja ilości w koszyku
 router.put("/cart/update", protect, updateCart);
 
+router.get("/orders", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate(
+      "orders.items.product"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie znaleziony." });
+    }
+
+    res.status(200).json(user.orders);
+  } catch (error) {
+    console.error("Błąd podczas pobierania zamówień:", error);
+    res.status(500).json({ message: "Nie udało się pobrać zamówień.", error });
+  }
+});
+
 // Place Order
 router.post("/orders", protect, async (req, res) => {
   const { items, totalPrice, deliveryMethod } = req.body;

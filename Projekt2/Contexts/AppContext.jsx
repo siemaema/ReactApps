@@ -247,6 +247,7 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
+        API_URL,
         setCart,
         updateUserProfile,
         addToCart,
