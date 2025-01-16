@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "Przygotowywane",
-    enum: ["Przygotowywane", "Gotowe do odbioru", "Wysłane"],
+    enum: ["Przygotowywane", "Gotowe Do Odbioru", "Wysłane"],
   },
 });
 

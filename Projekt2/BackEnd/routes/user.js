@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/user.js";
+import Product from "../models/products.js";
 import mongoose from "mongoose";
 import {
   uploadImage,
@@ -109,7 +110,6 @@ router.post("/orders", protect, async (req, res) => {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  // Sprawdzenie, czy `deliveryPoint` jest wymagane dla Paczkomatu
   if (deliveryMethod === "paczkomat" && !deliveryPoint) {
     return res.status(400).json({
       message: "Delivery point is required for Paczkomat delivery method.",
@@ -123,22 +123,46 @@ router.post("/orders", protect, async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
+    const updatedProducts = [];
+
+    // Sprawdzamy i zmniejszamy ilość produktów w magazynie
+    for (const item of items) {
+      const product = await Product.findById(item.product);
+
+      if (!product) {
+        return res
+          .status(404)
+          .json({ message: `Product with ID ${item.product} not found.` });
+      }
+
+      if (product.quantity < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient stock for product: ${product.name}.`,
+        });
+      }
+
+      product.quantity -= item.quantity;
+      await product.save();
+      updatedProducts.push(product); // Śledzimy zaktualizowane produkty
+    }
+
     // Dodanie nowego zamówienia
     const newOrder = {
       items,
       totalPrice,
       deliveryMethod,
-      deliveryPoint: deliveryMethod === "paczkomat" ? deliveryPoint : null, // Dodanie adresu Paczkomatu, jeśli wybrano metodę
+      deliveryPoint: deliveryMethod === "paczkomat" ? deliveryPoint : null,
       date: new Date(),
     };
 
     user.orders.push(newOrder);
-
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "Order placed successfully.", orders: user.orders });
+    res.status(200).json({
+      message: "Order placed successfully.",
+      orders: user.orders,
+      updatedProducts,
+    });
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).json({ message: "Failed to place order.", error });
