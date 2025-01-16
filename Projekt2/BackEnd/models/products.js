@@ -20,4 +20,14 @@ const productSchema = new mongoose.Schema({
   comments: [commentSchema], // Tablica komentarzy złożona z obiektów zgodnych z `commentSchema`
 });
 
+productSchema.pre("save", async function (next) {
+  if (!this.isNew) return next();
+
+  const Product = mongoose.model("Product", productSchema, "Products");
+  const lastProduct = await Product.findOne().sort({ id: -1 });
+
+  this.id = lastProduct ? lastProduct.id + 1 : 1; // Generowanie kolejnego ID
+  next();
+});
+
 export default mongoose.model("Product", productSchema, "Products");

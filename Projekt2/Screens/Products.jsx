@@ -12,12 +12,13 @@ const Products = () => {
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
-  const searchQuery = searchParams.get("searchQuery") || "";
+  const initialSearchQuery = searchParams.get("searchQuery") || "";
 
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery); // Lokalny stan dla searchQuery
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minRating, setMinRating] = useState(0);
-  const [sortBy, setSortBy] = useState(""); // State for sorting
+  const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
     if (products.length === 0) {
@@ -30,6 +31,11 @@ const Products = () => {
       setCategory(urlCategory);
     }
   }, [urlCategory, category, setCategory]);
+
+  useEffect(() => {
+    // Resetuje searchQuery, gdy zmienia się `location.search`
+    setSearchQuery(initialSearchQuery);
+  }, [initialSearchQuery]);
 
   const filteredProducts = products
     .filter((product) => {
@@ -64,7 +70,6 @@ const Products = () => {
       } else if (sortBy === "priceDesc") {
         return b.price - a.price;
       } else if (sortBy === "ratingDesc" || sortBy === "ratingAsc") {
-        // Calculate average ratings for products with comments
         const avgRatingA =
           a.comments && a.comments.length > 0
             ? a.comments.reduce((sum, c) => sum + c.stars, 0) /
@@ -76,14 +81,11 @@ const Products = () => {
               b.comments.length
             : 0;
 
-        // Sort by rating in the desired order
-        if (sortBy === "ratingDesc") {
-          return avgRatingB - avgRatingA;
-        } else {
-          return avgRatingA - avgRatingB;
-        }
+        return sortBy === "ratingDesc"
+          ? avgRatingB - avgRatingA
+          : avgRatingA - avgRatingB;
       } else {
-        return 0; // Default case, no sorting
+        return 0; // Brak sortowania
       }
     });
 
@@ -91,7 +93,9 @@ const Products = () => {
     setMinPrice("");
     setMaxPrice("");
     setMinRating(0);
-    setSortBy(""); // Reset sort
+    setSortBy(""); // Reset sortowania
+    setCategory(null);
+    setSearchQuery(""); // Resetuje searchQuery
   };
 
   if (loading)
@@ -114,11 +118,11 @@ const Products = () => {
             : "Wszystkie produkty"}
         </h2>
 
-        {/* Filters Section */}
+        {/* Filtry */}
         <div className="mb-6 p-4 bg-gray-100 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Filtry</h2>
           <div className="grid md:grid-cols-4 gap-4">
-            {/* Min Price */}
+            {/* Min Cena */}
             <div>
               <label className="block font-semibold mb-2">
                 Cena minimalna:
@@ -132,7 +136,7 @@ const Products = () => {
               />
             </div>
 
-            {/* Max Price */}
+            {/* Max Cena */}
             <div>
               <label className="block font-semibold mb-2">
                 Cena maksymalna:
@@ -146,7 +150,7 @@ const Products = () => {
               />
             </div>
 
-            {/* Min Rating */}
+            {/* Min Ocena */}
             <div>
               <label className="block font-semibold mb-2">
                 Minimalna ocena:
@@ -164,7 +168,7 @@ const Products = () => {
               </select>
             </div>
 
-            {/* Sort By */}
+            {/* Sortowanie */}
             <div>
               <label className="block font-semibold mb-2">Sortuj według:</label>
               <select
@@ -183,7 +187,7 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Reset Filters Button */}
+          {/* Resetowanie Filtrów */}
           <div className="mt-4">
             <button
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
@@ -194,7 +198,7 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Products List */}
+        {/* Lista produktów */}
         <ProductsListMap products={filteredProducts} />
       </div>
     </Layout>

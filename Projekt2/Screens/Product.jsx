@@ -15,40 +15,41 @@ const Product = () => {
   const [rating, setRating] = useState(5);
   const [comments, setComments] = useState([]);
 
-  // Fetch products if not already loaded
+  // Fetch product and comments
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts();
     }
   }, [products.length, fetchProducts]);
 
-  // Find the product by id
   const product =
     productFromState || products.find((p) => String(p._id) === id);
 
-  // Set comments when the product is available
+  const fetchComments = async () => {
+    if (!product) return;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products/${product._id}/comments`
+      );
+
+      if (!response.ok) {
+        throw new Error("Nie udało się pobrać komentarzy.");
+      }
+
+      const data = await response.json();
+      setComments(data.comments);
+    } catch (error) {
+      console.error("Błąd pobierania komentarzy:", error.message);
+    }
+  };
+
   useEffect(() => {
     if (product) {
-      setComments(product.comments || []);
+      fetchComments();
     }
   }, [product]);
 
-  // Handle quantity change
-  const handleQuantityChange = (e) => {
-    const value = Math.max(
-      1,
-      Math.min(product.quantity, Number(e.target.value))
-    );
-    setQuantity(value);
-  };
-
-  // Add to cart functionality
-  const handleAddToCart = () => {
-    addToCart(product, quantity);
-    alert(`${quantity} x ${product.name} dodano do koszyka`);
-  };
-
-  // Add comment functionality
   const handleAddComment = async () => {
     if (!loggedIn) {
       alert("Musisz być zalogowany, aby dodać komentarz.");
@@ -60,11 +61,6 @@ const Product = () => {
       return;
     }
 
-    const payload = {
-      text: comment, // Tekst komentarza
-      stars: rating, // Ocena w gwiazdkach
-    };
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/products/${product._id}/comment`,
@@ -74,27 +70,25 @@ const Product = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ text: comment, stars: rating }),
         }
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Nie udało się dodać komentarza.");
+        const data = await response.json();
+        throw new Error(data.message || "Nie udało się dodać komentarza.");
       }
 
-      const data = await response.json();
       alert("Komentarz dodany!");
-      setComments((prev) => [...prev, data.comment]); // Dodaj nowy komentarz do stanu
-      setComment(""); // Wyczyść pole komentarza
-      setRating(5); // Resetuj ocenę
+      setComment("");
+      setRating(5);
+      await fetchComments(); // Odświeżenie listy komentarzy
     } catch (error) {
       console.error("Błąd dodawania komentarza:", error.message);
-      alert(error.message);
+      alert(error.message || "Błąd dodawania komentarza.");
     }
   };
 
-  // If the product is not found
   if (!product) {
     return (
       <div className="product-not-found flex items-center justify-center h-screen">
@@ -105,26 +99,49 @@ const Product = () => {
     );
   }
 
+  const handleQuantityChange = (e) => {
+    const value = Math.max(
+      1,
+      Math.min(product.quantity, Number(e.target.value))
+    );
+    setQuantity(value);
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    alert(`${quantity} x ${product.name} dodano do koszyka`);
+  };
+
   return (
     <Layout>
-      <div className="product-page container mx-auto p-4">
-        <div className="flex flex-col md:flex-row">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full md:w-1/2 rounded-lg shadow-md"
-          />
-          <div className="p-4 md:w-1/2">
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-            <p className="text-lg mb-4">{product.description}</p>
-            <p className="text-xl font-bold mb-4">Cena: {product.price} zł</p>
-            <p className="text-md mb-4 text-gray-600">
+      <div className="product-page container mx-auto p-6">
+        <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden">
+          {/* Product Image */}
+          <div className="w-full md:w-1/2">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="object-cover w-full h-full"
+            />
+          </div>
+
+          {/* Product Details */}
+          <div className="p-6 md:w-1/2 flex flex-col">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              {product.name}
+            </h1>
+            <p className="text-lg text-gray-600 mb-4">{product.description}</p>
+            <p className="text-2xl font-semibold text-green-600 mb-4">
+              Cena: {product.price} zł
+            </p>
+            <p className="text-md text-gray-500 mb-4">
               Ilość w magazynie:{" "}
-              <span className="font-semibold">{product.quantity}</span>
+              <span className="font-bold">{product.quantity}</span>
             </p>
 
-            <div className="flex items-center mb-4">
-              <label htmlFor="quantity" className="mr-2 text-lg font-semibold">
+            {/* Quantity Selector */}
+            <div className="flex items-center space-x-4 mb-4">
+              <label htmlFor="quantity" className="text-lg font-medium">
                 Ilość:
               </label>
               <input
@@ -132,45 +149,47 @@ const Product = () => {
                 type="number"
                 value={quantity}
                 onChange={handleQuantityChange}
-                className="w-16 p-2 border rounded-lg text-center"
+                className="w-20 p-2 border rounded-md text-center"
                 min="1"
                 max={product.quantity}
               />
             </div>
 
+            {/* Add to Cart Button */}
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
               onClick={handleAddToCart}
+              className="px-6 py-3 bg-blue-600 text-white text-lg font-bold rounded-lg hover:bg-blue-700 transition"
             >
               Dodaj do koszyka
             </button>
           </div>
         </div>
 
-        <div className="comments-section mt-8">
-          <h2 className="text-2xl font-bold mb-4">Komentarze</h2>
-          <div className="comments-list space-y-4">
+        {/* Comments Section */}
+        <div className="comments-section mt-12">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Komentarze</h2>
+          <div className="comments-list space-y-6">
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-gray-100 rounded-lg shadow-sm"
+                  className="p-6 bg-gray-100 rounded-lg shadow-md"
                 >
-                  <p className="text-gray-800 font-semibold">
+                  <p className="text-lg font-semibold text-gray-800">
                     {comment.username}
                   </p>
                   <p className="text-gray-600">{comment.text}</p>
-                  <p className="text-sm text-gray-500 flex items-center justify-between w-full">
-                    <span className="flex items-center">
-                      Ocena:
-                      <span className="ml-3 flex">
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="flex items-center">
+                      <span className="text-yellow-500 font-bold">Ocena:</span>
+                      <span className="ml-2 flex">
                         {Array(comment.stars)
-                          .fill(0)
+                          .fill(null)
                           .map((_, starIndex) => (
                             <svg
                               key={starIndex}
                               xmlns="http://www.w3.org/2000/svg"
-                              className="w-6 h-6 text-yellow-500 ml-1"
+                              className="w-5 h-5 text-yellow-400 ml-1"
                               viewBox="0 0 24 24"
                               fill="currentColor"
                             >
@@ -178,11 +197,11 @@ const Product = () => {
                             </svg>
                           ))}
                       </span>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
-                    <span className="text-end">{`${new Date(
-                      comment.createdAt
-                    ).toLocaleDateString()}`}</span>
-                  </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -192,22 +211,25 @@ const Product = () => {
             )}
           </div>
 
+          {/* Add Comment Section */}
           {loggedIn && (
-            <div className="add-comment mt-6">
-              <h3 className="text-xl font-bold mb-2">Dodaj komentarz</h3>
+            <div className="add-comment mt-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                Dodaj komentarz
+              </h3>
               <textarea
                 placeholder="Wpisz swój komentarz..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="4"
+                className="w-full p-4 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="5"
               ></textarea>
-              <label className="block mt-2">
+              <label className="block mt-4">
                 Ocena:
                 <select
                   value={rating}
                   onChange={(e) => setRating(Number(e.target.value))}
-                  className="ml-2 p-2 border rounded-lg"
+                  className="ml-2 p-2 border rounded-md"
                 >
                   {[1, 2, 3, 4, 5].map((r) => (
                     <option key={r} value={r}>
@@ -217,8 +239,8 @@ const Product = () => {
                 </select>
               </label>
               <button
-                className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
                 onClick={handleAddComment}
+                className="mt-4 px-6 py-3 bg-green-600 text-white text-lg font-bold rounded-lg hover:bg-green-700 transition"
               >
                 Dodaj komentarz
               </button>

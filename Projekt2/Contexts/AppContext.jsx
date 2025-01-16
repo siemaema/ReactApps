@@ -18,21 +18,30 @@ export const AppProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   // Decode token and set user
-  const decodeAndSetUser = (token) => {
+  const decodeAndSetUser = async (token) => {
     try {
       const decoded = jwtDecode(token);
 
       // Sprawdzanie, czy token wygasł
       if (decoded.exp * 1000 < Date.now()) {
-        logoutUser(); // Tylko wylogowanie
+        logoutUser();
       } else {
-        setUser(decoded);
+        const response = await fetch(`${API_URL}/api/users/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          throw new Error("Nie udało się pobrać szczegółów użytkownika.");
+        }
+
+        const userData = await response.json();
+        setUser(userData); // Ustawienie pełnego profilu użytkownika
         setLoggedIn(true);
       }
     } catch (err) {
       console.error("Błąd podczas dekodowania tokena:", err);
       localStorage.removeItem("token");
-      logoutUser(); // Wylogowanie w przypadku błędu
+      logoutUser();
     }
   };
 
@@ -42,6 +51,36 @@ export const AppProvider = ({ children }) => {
       decodeAndSetUser(token);
     } else {
       setLoggedIn(false);
+    }
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/users/profile`, {
+        method: "GET",
+        headers: authHeader(),
+      });
+
+      if (!response.ok) {
+        throw new Error("Nie udało się pobrać profilu użytkownika.");
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error("Błąd pobierania profilu:", error);
+    }
+  };
+  const authHeader = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      decodeAndSetUser(token); // Dekodowanie tokena
+      fetchUserProfile(); // Pobranie szczegółów profilu
     }
   }, []);
 
@@ -69,6 +108,11 @@ export const AppProvider = ({ children }) => {
   // Add item to cart
   const addToCart = async (product, quantity) => {
     try {
+      if (!product || !product._id) {
+        console.error("addToCart received invalid product:", product);
+        throw new Error("Invalid product data passed to addToCart.");
+      }
+
       if (loggedIn) {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/users/cart/add`,
@@ -88,28 +132,14 @@ export const AppProvider = ({ children }) => {
         }
 
         const { cart } = await response.json();
-        setCart(cart); // Update cart in the context
+        setCart(cart);
         alert(`${quantity} x ${product.name} added to cart!`);
       } else {
-        // Handle local cart for unauthenticated users
-        const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-        const existingItem = localCart.find(
-          (item) => item.product._id === product._id
-        );
-
-        if (existingItem) {
-          existingItem.quantity += quantity;
-        } else {
-          localCart.push({ product, quantity });
-        }
-
-        localStorage.setItem("cart", JSON.stringify(localCart));
-        setCart(localCart);
-        alert(`${quantity} x ${product.name} added to cart!`);
+        alert("You need to be logged in to add products to the cart.");
       }
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Failed to add to cart.");
+      console.error("Error adding to cart:", error.message);
+      alert(error.message || "Failed to add to cart.");
     }
   };
 
@@ -179,6 +209,8 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+ 
+
   // Fetch slider products
   const fetchSliderProducts = async () => {
     try {
@@ -214,7 +246,8 @@ export const AppProvider = ({ children }) => {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        decodeAndSetUser(data.token); // Ustawienie użytkownika na podstawie tokena
+        setUser(data.user); // Ustawienie całego obiektu użytkownika
+        setLoggedIn(true);
 
         // Przekierowanie na podstawie roli użytkownika
         if (data.user.role === "admin") {
@@ -301,6 +334,8 @@ export const AppProvider = ({ children }) => {
         fetchProducts,
         fetchSliderProducts,
         fetchLatestProducts,
+        fetchUserProfile,
+
         setFilter,
         filter,
         setCategory,
@@ -311,6 +346,7 @@ export const AppProvider = ({ children }) => {
         loading,
         error,
         setError,
+        authHeader,
       }}
     >
       {children}

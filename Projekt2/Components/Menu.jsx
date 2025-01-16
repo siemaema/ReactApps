@@ -5,6 +5,7 @@ import {
   CSidebarNav,
   CNavItem,
   CNavGroup,
+  CBadge,
 } from "@coreui/react";
 import { CIcon } from "@coreui/icons-react";
 import * as icon from "@coreui/icons";
@@ -12,7 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../Contexts/AppContext";
 
 function Menu() {
-  const { setCategory, loggedIn } = useAppContext(); // Używamy funkcji setCategory z kontekstu
+  const { setCategory, loggedIn, cart } = useAppContext(); // Używamy funkcji setCategory z kontekstu
   const navigate = useNavigate(); // useNavigate for programmatic navigation
 
   // Funkcja do ustawiania kategorii i nawigacji
@@ -24,9 +25,11 @@ function Menu() {
     setCategory(null);
     navigate("/shop");
   };
+  const badge = cart.reduce((acc, curr) => curr.quantity + acc, 0);
+  console.log(cart);
   return (
     <CSidebar
-      className="border-end rounded-md h-full overflow-y-auto bg-dark text-white"
+      className="border-end rounded-md h-full overflow-y-auto bg-dark text-white z-0"
       colorScheme="dark"
     >
       <CSidebarHeader className="border-bottom bg-primary text-white">
@@ -121,9 +124,10 @@ function Menu() {
               className="hover:bg-blue-500 text-white w-full rounded-md py-2 px-2 transition duration-300 ease-in-out"
               onClick={() => navigate("/cart")}
             >
-              <span className="flex items-center gap-3">
+              <span className="flex items-center  gap-4">
                 <CIcon customClassName="nav-icon" icon={icon.cilBasket} />
                 <span>Koszyk</span>
+                <CBadge color="primary">{badge}</CBadge>
               </span>
             </button>
           </CNavItem>

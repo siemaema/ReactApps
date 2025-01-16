@@ -34,14 +34,48 @@ export const getLatestProducts = async (req, res) => {
   }
 };
 
-// Dodanie nowego produktu
 export const addProduct = async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
+    const {
+      name,
+      description,
+      price,
+      quantity,
+      category,
+      image,
+      slider,
+      latest,
+    } = req.body;
+
+    if (!name || !description || !price || !quantity || !category || !image) {
+      return res.status(400).json({ message: "Wszystkie pola są wymagane." });
+    }
+
+    // Pobierz ostatni produkt, aby znaleźć największe `id`
+    const lastProduct = await Product.findOne().sort({ id: -1 });
+
+    // Automatycznie ustaw `id` o jeden większe niż w ostatnim produkcie
+    const newId = lastProduct ? parseInt(lastProduct.id, 51) + 1 : 1;
+
+    const newProduct = new Product({
+      id: newId,
+      name,
+      description,
+      price,
+      quantity,
+      category,
+      image,
+      slider,
+      latest,
+    });
+
     await newProduct.save();
-    res.status(201).json({ message: "Produkt dodany pomyślnie", newProduct });
+    res.status(201).json({ message: "Produkt dodany pomyślnie.", newProduct });
   } catch (error) {
-    res.status(500).json({ message: "Nie udało się dodać produktu", error });
+    console.error("Błąd podczas dodawania produktu:", error);
+    res
+      .status(500)
+      .json({ message: "Nie udało się dodać produktu.", error: error.message });
   }
 };
 
@@ -207,5 +241,30 @@ export const filterProducts = async (req, res) => {
     res
       .status(500)
       .json({ message: "Błąd podczas filtrowania produktów.", error });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, price, quantity, category } = req.body;
+
+  try {
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Produkt nie znaleziony." });
+    }
+
+    // Aktualizacja pól
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.quantity = quantity || product.quantity;
+    product.category = category || product.category;
+
+    const updatedProduct = await product.save();
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error("Błąd aktualizacji produktu:", error);
+    res.status(500).json({ message: "Nie udało się zaktualizować produktu." });
   }
 };

@@ -88,7 +88,7 @@ const UserProfile = () => {
     setSaving(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users/update`,
+        `${import.meta.env.VITE_API_URL}/api/users/profile`, // Ensure this matches the backend route
         {
           method: "PUT",
           headers: {
@@ -104,13 +104,12 @@ const UserProfile = () => {
       if (response.ok) {
         setProfileData(data);
         alert("Zaktualizowano dane użytkownika.");
-
-        // Aktualizujemy stan użytkownika w kontekście
+        // Update user context
         setUser((prevUser) => ({
           ...prevUser,
           username: data.username,
           email: data.email,
-          image: data.image, // Aktualizacja zdjęcia w kontekście
+          image: data.image,
         }));
       } else {
         throw new Error(data.message || "Nie udało się zaktualizować profilu.");

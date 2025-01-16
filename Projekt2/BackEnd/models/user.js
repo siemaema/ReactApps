@@ -8,17 +8,23 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
         required: true,
-      }, // Dodano `required: true`
-      quantity: { type: Number, required: true, min: 1 }, // Minimalna ilość to 1
+      },
+      quantity: { type: Number, required: true, min: 1 },
     },
   ],
-  totalPrice: { type: Number, required: true, min: 0 }, // Minimalna wartość to 0
+  totalPrice: { type: Number, required: true, min: 0 },
   deliveryMethod: {
     type: String,
     required: true,
     enum: ["kurier", "paczkomat", "odbiór osobisty"],
-  }, // Przykładowe opcje dostawy
+  },
+  deliveryPoint: { type: String }, // Opcjonalny adres Paczkomatu
   date: { type: Date, default: Date.now },
+  status: {
+    type: String,
+    default: "Przygotowywane",
+    enum: ["Przygotowywane", "Gotowe do odbioru", "Wysłane"],
+  },
 });
 
 const userSchema = new mongoose.Schema(

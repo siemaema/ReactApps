@@ -1,4 +1,3 @@
-import "./App.css";
 import "@coreui/coreui/dist/css/coreui.min.css";
 import "@coreui/coreui/dist/js/coreui.min.js";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import CSS Bootstrap
@@ -11,7 +10,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AppProvider } from "../Contexts/AppContext";
+import { AppProvider, useAppContext } from "../Contexts/AppContext";
 import MainPage from "../Screens/MainPage";
 import LoginPage from "../Screens/LoginPage";
 import RegisterPage from "../Screens/RegisterPage";
@@ -39,6 +38,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/orders" element={<UserOrders />} />
           <Route path="/finalize" element={<FinalizeOrder />} />
+          {/* Użycie AdminRoute */}
           <Route
             path="/admin"
             element={
