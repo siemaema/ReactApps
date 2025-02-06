@@ -13,23 +13,13 @@ składanie zamówień i zarządzanie kontem.
 ✅ Backend z API REST
 
 📂 Struktura projektu
-Projekt Sklepu
-│── BackEnd/               # Serwer Node.js i API
-│   ├── controllers/       # Logika biznesowa API
-│   ├── middleware/        # Middleware np. autoryzacja
-│   ├── models/            # Modele danych (MongoDB)
-│   ├── routes/            # Endpointy API
-│   ├── server.mjs         # Główny plik serwera
-│
-│── Components/            # Reużywalne komponenty UI
-│── Screens/               # Widoki stron aplikacji
-│── Contexts/              # Kontekst aplikacji (React Context API)
-│── data/                  # Pliki konfiguracyjne (np. dane slidera)
-│── public/                # Pliki statyczne
-│── src/                   # Pliki główne frontendu
-│── package.json           # Plik konfiguracyjny projektu
-│── tailwind.config.js     # Konfiguracja Tailwind CSS
-│── vite.config.js         # Konfiguracja Vite 
+Projekt składa się z dwóch głównych części: backendu (serwera API) oraz frontendu (interfejsu użytkownika).
+
+W folderze BackEnd znajduje się serwer napisany w Node.js z frameworkiem Express. Obsługuje on autoryzację użytkowników oraz zarządzanie produktami.
+
+Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w React z wykorzystaniem Vite jako narzędzia do zarządzania środowiskiem deweloperskim.
+
+
 
 🚀 Instalacja i uruchomienie
 
