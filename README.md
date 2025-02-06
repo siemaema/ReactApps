@@ -25,7 +25,7 @@ Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w Re
 
 🔧 Wymagania:
 Node.js
-MongoDB
+MongoDB (załączone są jsony bazy danych może je zaimportować w bazie moongoDB należy pamiętać aby dodać swoje ip w panelu moongo)
 
 💻 Uruchomienie projektu lokalnie
 
