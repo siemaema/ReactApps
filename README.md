@@ -53,17 +53,29 @@ npm run dev (uruchamia się na porcie 5173)
 📜 Opis kluczowych plików
 🔹 Backend
 server.mjs – Główny plik serwera
+
 routes/products.js – Endpointy API dla produktów
+
 routes/user.js – Endpointy API dla użytkowników
+
 models/products.js – Model bazy danych dla produktów
+
 models/user.js – Model użytkownika
+
 🔹 Frontend
+
 Screens/MainPage.jsx – Strona główna sklepu
+
 Screens/Cart.jsx – Koszyk użytkownika
+
 Screens/Product.jsx – Strona pojedynczego produktu
+
 Screens/LoginPage.jsx – Logowanie i rejestracja
+
 Components/NavBar.jsx – Nawigacja aplikacji
+
 Components/ProductsList.jsx – Lista produktów
+
 Components/Slider.jsx – Slider promocyjny
 
 
