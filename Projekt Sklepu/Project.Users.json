@@ -1,0 +1,109 @@
+[{
+  "_id": {
+    "$oid": "678575c18e5da281e6081664"
+  },
+  "username": "admin",
+  "email": "admin@admin.pl",
+  "password": "$2a$12$0ijlKAEkbnwpxpxi4YsQru/mTLg59sMh/sa0aznZ26dNRdqUYHpI6",
+  "role": "admin",
+  "image": "",
+  "cart": [],
+  "orders": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6789809b0f218f82fc03d1c3"
+  },
+  "username": "User",
+  "email": "User@gmail.com",
+  "password": "$2a$12$MrcZlM5BqnE3t7AjRYVQaeCvzd9j6I4X5it1gaGzQCNTlmai4WUSS",
+  "role": "user",
+  "image": "https://kobiecafotoszkola.pl/wp-content/uploads/2018/09/zdj%C4%99cia-z%C5%82ota-godzina-9899.jpg",
+  "cart": [
+    {
+      "product": {
+        "$oid": "677fe66ae6bab4833154be04"
+      },
+      "quantity": 1,
+      "_id": {
+        "$oid": "678a216f87eb486deb973124"
+      }
+    },
+    {
+      "product": {
+        "$oid": "677fe66ae6bab4833154be05"
+      },
+      "quantity": 1,
+      "_id": {
+        "$oid": "678bde02cdb295ff19a7ba2d"
+      }
+    }
+  ],
+  "orders": [
+    {
+      "items": [
+        {
+          "product": {
+            "$oid": "677fe66ae6bab4833154be05"
+          },
+          "quantity": 1,
+          "_id": {
+            "$oid": "6789863b0f218f82fc03de72"
+          }
+        },
+        {
+          "product": {
+            "$oid": "677fe66ae6bab4833154be04"
+          },
+          "quantity": 3,
+          "_id": {
+            "$oid": "6789863b0f218f82fc03de73"
+          }
+        }
+      ],
+      "totalPrice": 471.49,
+      "deliveryMethod": "odbiór osobisty",
+      "deliveryPoint": null,
+      "date": {
+        "$date": "2025-01-16T22:20:43.105Z"
+      },
+      "status": "Gotowe do odbioru",
+      "_id": {
+        "$oid": "6789863b0f218f82fc03de71"
+      }
+    },
+    {
+      "items": [
+        {
+          "product": {
+            "$oid": "677fe66ae6bab4833154be03"
+          },
+          "quantity": 1
+        }
+      ],
+      "totalPrice": 150,
+      "deliveryMethod": "kurier",
+      "date": {
+        "$date": "2025-01-16T22:21:44.463Z"
+      },
+      "status": "Przygotowywane",
+      "_id": {
+        "$oid": "678986780f218f82fc03df7f"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-01-16T21:56:43.959Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-18T16:59:46.893Z"
+  },
+  "__v": 9,
+  "address": {
+    "street": "Test",
+    "houseNumber": "123",
+    "postalCode": "12-345",
+    "city": "Test"
+  }
+}]
