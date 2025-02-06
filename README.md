@@ -29,7 +29,7 @@ Projekt Sklepu
 │── src/                   # Pliki główne frontendu
 │── package.json           # Plik konfiguracyjny projektu
 │── tailwind.config.js     # Konfiguracja Tailwind CSS
-│── vite.config.js         # Konfiguracja Vite
+│── vite.config.js         # Konfiguracja Vite 
 
 🚀 Instalacja i uruchomienie
 
