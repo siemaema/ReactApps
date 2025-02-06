@@ -25,12 +25,14 @@ Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w Re
 
 🔧 Wymagania:
 Node.js
-MongoDB (jeżeli 
+MongoDB
 
 💻 Uruchomienie projektu lokalnie
+
 1️⃣ Klonowanie repozytorium:
 
 git clone https://github.com/siemaema/ReactApps.git
+
 cd ReactApps/Projekt Sklepu
 
 2️⃣ Instalacja zależności:
