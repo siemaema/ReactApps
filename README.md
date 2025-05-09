@@ -1,94 +1,24 @@
-README for Projekt Sklepu
-🛒 Projekt Sklepu
-Projekt Sklepu to pełnoprawna aplikacja e-commerce stworzona przy użyciu React, Node.js i Express.
-Składa się z frontendu, backendu oraz bazy danych, umożliwiając użytkownikom przeglądanie produktów,
-składanie zamówień i zarządzanie kontem.
+# 🧩 ReactApps – Zbiór projektów w React
 
-📌 Kluczowe funkcjonalności
-✅ Autoryzacja i rejestracja użytkowników
-✅ Przeglądanie i wyszukiwanie produktów
-✅ Koszyk zakupowy i finalizacja zamówienia
-✅ Panel administracyjny do zarządzania produktami
-✅ Responsywny interfejs użytkownika
-✅ Backend z API REST
+To repozytorium zawiera zarówno:
+- **Mini-projekty React** – małe aplikacje do nauki i eksperymentów
+- **Sklep internetowy (V1)** – pełna aplikacja e-commerce z frontendem i backendem
 
-📂 Struktura projektu
-Projekt składa się z dwóch głównych części: backendu (serwera API) oraz frontendu (interfejsu użytkownika).
+## 🌱 Gałęzie repozytorium
 
-W folderze BackEnd znajduje się serwer napisany w Node.js z frameworkiem Express. Obsługuje on autoryzację użytkowników oraz zarządzanie produktami.
+- `Mini-projekty` – tylko katalog z mini-aplikacjami React
+- `V1` – pełna aplikacja sklepu internetowego (React + Node.js + MongoDB)
+- `main` – wszystko razem w jednym miejscu
 
-Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w React z wykorzystaniem Vite jako narzędzia do zarządzania środowiskiem deweloperskim.
+> Kod w `main` to połączenie projektów z pozostałych branchy. Traktuj tę gałąź jako wersję ogólną / roboczą.
 
 
 
-🚀 Instalacja i uruchomienie
+Obecnie pracuję nad **nową, bardziej zoptymalizowaną wersją sklepu** z wykorzystaniem:
+- Redux Toolkit do zarządzania stanem
+- nowoczesnych wzorców architektury
+- wdrożeniem na własnym serwerze VPS
 
-🔧 Wymagania:
-Node.js
-MongoDB (załączone są jsony bazy danych może je zaimportować w bazie moongoDB należy pamiętać aby dodać swoje ip w panelu moongo)
+---
 
-💻 Uruchomienie projektu lokalnie
-
-1️⃣ Klonowanie repozytorium:
-
-git clone https://github.com/siemaema/ReactApps.git
-
-cd ReactApps/Projekt Sklepu
-
-2️⃣ Instalacja zależności:
-npm install
-
-3️⃣ Konfiguracja zmiennych środowiskowych:
-Utwórz plik .env w folderze BackEnd/ i dodaj:
-
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-
-4️⃣ Uruchomienie backendu:
-cd BackEnd
-node server.mjs
-
-5️⃣ Uruchomienie frontendu:
-cd Projekt Sklepu
-npm run dev (uruchamia się na porcie 5173)
-
-📜 Opis kluczowych plików
-🔹 Backend
-server.mjs – Główny plik serwera
-
-routes/products.js – Endpointy API dla produktów
-
-routes/user.js – Endpointy API dla użytkowników
-
-models/products.js – Model bazy danych dla produktów
-
-models/user.js – Model użytkownika
-
-🔹 Frontend
-
-Screens/MainPage.jsx – Strona główna sklepu
-
-Screens/Cart.jsx – Koszyk użytkownika
-
-Screens/Product.jsx – Strona pojedynczego produktu
-
-Screens/LoginPage.jsx – Logowanie i rejestracja
-
-Components/NavBar.jsx – Nawigacja aplikacji
-
-Components/ProductsList.jsx – Lista produktów
-
-Components/Slider.jsx – Slider promocyjny
-
-
-
-🚀 Technologie
-Frontend: React, Tailwind CSS, Context API
-Backend: Node.js, Express.js, MongoDB, JWT
-Narzędzia: Vite, ESLint
-
-🤝 Chcesz dodać nową funkcjonalność? Zapraszamy do forka repozytorium i składania pull requestów.
-
-git checkout -b feature-new-functionality
-git commit -m "Dodano nową funkcjonalność"
-git push origin feature-new-functionality
+Każdy projekt posiada swój własny katalog i może być uruchamiany niezależnie.
