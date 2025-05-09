@@ -4,7 +4,7 @@ To pierwsza wersja aplikacji sklepu internetowego stworzonego w architekturze fu
 Projekt został podzielony na frontend i backend, a jego celem było stworzenie działającej podstawowej wersji sklepu internetowego z logowaniem, koszykiem, zamówieniami oraz panelem admina.
 
 Obecnie pracuję nad kolejną, bardziej zoptymalizowaną wersją aplikacji z lepszą strukturą, Reduxem i wdrożeniem na własnym VPS-ie.
-
+ 
 📁 Struktura katalogów
 Kopiuj
 Edytuj
