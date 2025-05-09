@@ -30,34 +30,27 @@ npm lub yarn​
 Instalacja i uruchomienie
 Sklonuj repozytorium:​
 
-bash
-Kopiuj
-Edytuj
+
 git clone https://github.com/siemaema/ReactApps.git
 cd ReactApps
 git checkout Mini-projekty
 Przejdź do katalogu wybranego projektu:​
 
-bash
-Kopiuj
-Edytuj
 cd <nazwa-projektu>
+
 Zainstaluj zależności:​
 
-bash
-Kopiuj
-Edytuj
 npm install
 # lub
 yarn install
+
 Uruchom aplikację:​
 
-bash
-Kopiuj
-Edytuj
+
 npm start
 # lub
 yarn start
+
 Aplikacja zostanie uruchomiona pod adresem http://localhost:3000/.​
 
 Struktura projektu
