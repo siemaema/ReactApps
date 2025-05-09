@@ -1,94 +1,75 @@
-README for Projekt Sklepu
-🛒 Projekt Sklepu
-Projekt Sklepu to pełnoprawna aplikacja e-commerce stworzona przy użyciu React, Node.js i Express.
-Składa się z frontendu, backendu oraz bazy danych, umożliwiając użytkownikom przeglądanie produktów,
-składanie zamówień i zarządzanie kontem.
+Mini-projekty w React
+To repozytorium zawiera zbiór mini-projektów stworzonych w ramach nauki Reacta. Każdy projekt znajduje się w osobnym katalogu i przedstawia różne funkcjonalności oraz koncepcje związane z Reactem.​
 
-📌 Kluczowe funkcjonalności
-✅ Autoryzacja i rejestracja użytkowników
-✅ Przeglądanie i wyszukiwanie produktów
-✅ Koszyk zakupowy i finalizacja zamówienia
-✅ Panel administracyjny do zarządzania produktami
-✅ Responsywny interfejs użytkownika
-✅ Backend z API REST
+Spis projektów
+classy-weather: Aplikacja pogodowa wykorzystująca klasyczne komponenty klasowe.
 
-📂 Struktura projektu
-Projekt składa się z dwóch głównych części: backendu (serwera API) oraz frontendu (interfejsu użytkownika).
+eat-n-split: Aplikacja do dzielenia rachunków między znajomych.
 
-W folderze BackEnd znajduje się serwer napisany w Node.js z frameworkiem Express. Obsługuje on autoryzację użytkowników oraz zarządzanie produktami.
+how-react-work: Demonstracja działania Reacta pod maską.
 
-Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w React z wykorzystaniem Vite jako narzędzia do zarządzania środowiskiem deweloperskim.
+pizza-menu: Interaktywne menu pizzerii z możliwością składania zamówień.
 
+react-quiz: Quiz sprawdzający wiedzę użytkownika.
 
+starter: Szablon startowy dla nowych projektów React.
 
-🚀 Instalacja i uruchomienie
+steps: Aplikacja ilustrująca kroki w procesie (np. rejestracji).
 
-🔧 Wymagania:
-Node.js
-MongoDB (załączone są jsony bazy danych może je zaimportować w bazie moongoDB należy pamiętać aby dodać swoje ip w panelu moongo)
+travel-list: Lista rzeczy do spakowania na podróż.
 
-💻 Uruchomienie projektu lokalnie
+usepopcorn: Aplikacja do oceniania filmów z wykorzystaniem hooków.
 
-1️⃣ Klonowanie repozytorium:
+worldwise: Aplikacja mapowa do śledzenia odwiedzonych miejsc.​
 
+Wymagania
+Node.js w wersji 14 lub nowszej
+
+npm lub yarn​
+
+Instalacja i uruchomienie
+Sklonuj repozytorium:​
+
+bash
+Kopiuj
+Edytuj
 git clone https://github.com/siemaema/ReactApps.git
+cd ReactApps
+git checkout Mini-projekty
+Przejdź do katalogu wybranego projektu:​
 
-cd ReactApps/Projekt Sklepu
+bash
+Kopiuj
+Edytuj
+cd <nazwa-projektu>
+Zainstaluj zależności:​
 
-2️⃣ Instalacja zależności:
+bash
+Kopiuj
+Edytuj
 npm install
+# lub
+yarn install
+Uruchom aplikację:​
 
-3️⃣ Konfiguracja zmiennych środowiskowych:
-Utwórz plik .env w folderze BackEnd/ i dodaj:
+bash
+Kopiuj
+Edytuj
+npm start
+# lub
+yarn start
+Aplikacja zostanie uruchomiona pod adresem http://localhost:3000/.​
 
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+Struktura projektu
+Każdy projekt zawiera standardową strukturę aplikacji React:​
 
-4️⃣ Uruchomienie backendu:
-cd BackEnd
-node server.mjs
+public/ – pliki publiczne
 
-5️⃣ Uruchomienie frontendu:
-cd Projekt Sklepu
-npm run dev (uruchamia się na porcie 5173)
+src/ – źródła aplikacji
 
-📜 Opis kluczowych plików
-🔹 Backend
-server.mjs – Główny plik serwera
+package.json – plik konfiguracyjny z zależnościami​
 
-routes/products.js – Endpointy API dla produktów
+Licencja
+Ten projekt jest dostępny na licencji MIT.​
 
-routes/user.js – Endpointy API dla użytkowników
-
-models/products.js – Model bazy danych dla produktów
-
-models/user.js – Model użytkownika
-
-🔹 Frontend
-
-Screens/MainPage.jsx – Strona główna sklepu
-
-Screens/Cart.jsx – Koszyk użytkownika
-
-Screens/Product.jsx – Strona pojedynczego produktu
-
-Screens/LoginPage.jsx – Logowanie i rejestracja
-
-Components/NavBar.jsx – Nawigacja aplikacji
-
-Components/ProductsList.jsx – Lista produktów
-
-Components/Slider.jsx – Slider promocyjny
-
-
-
-🚀 Technologie
-Frontend: React, Tailwind CSS, Context API
-Backend: Node.js, Express.js, MongoDB, JWT
-Narzędzia: Vite, ESLint
-
-🤝 Chcesz dodać nową funkcjonalność? Zapraszamy do forka repozytorium i składania pull requestów.
-
-git checkout -b feature-new-functionality
-git commit -m "Dodano nową funkcjonalność"
-git push origin feature-new-functionality
+Jeśli potrzebujesz bardziej szczegółowego opisu konkretnego projektu lub dodatkowych informacji, daj znać!
