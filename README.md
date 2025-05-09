@@ -1,94 +1,55 @@
-README for Projekt Sklepu
-🛒 Projekt Sklepu
-Projekt Sklepu to pełnoprawna aplikacja e-commerce stworzona przy użyciu React, Node.js i Express.
-Składa się z frontendu, backendu oraz bazy danych, umożliwiając użytkownikom przeglądanie produktów,
-składanie zamówień i zarządzanie kontem.
+🛍️ Sklep Internetowy – Wersja V1
+To pierwsza wersja aplikacji sklepu internetowego stworzonego w architekturze full-stack z wykorzystaniem React, Node.js, Express oraz MongoDB.
 
-📌 Kluczowe funkcjonalności
-✅ Autoryzacja i rejestracja użytkowników
-✅ Przeglądanie i wyszukiwanie produktów
-✅ Koszyk zakupowy i finalizacja zamówienia
-✅ Panel administracyjny do zarządzania produktami
-✅ Responsywny interfejs użytkownika
-✅ Backend z API REST
+Projekt został podzielony na frontend i backend, a jego celem było stworzenie działającej podstawowej wersji sklepu internetowego z logowaniem, koszykiem, zamówieniami oraz panelem admina.
 
-📂 Struktura projektu
-Projekt składa się z dwóch głównych części: backendu (serwera API) oraz frontendu (interfejsu użytkownika).
+Obecnie pracuję nad kolejną, bardziej zoptymalizowaną wersją aplikacji z lepszą strukturą, Reduxem i wdrożeniem na własnym VPS-ie.
 
-W folderze BackEnd znajduje się serwer napisany w Node.js z frameworkiem Express. Obsługuje on autoryzację użytkowników oraz zarządzanie produktami.
+📁 Struktura katalogów
+Kopiuj
+Edytuj
+ReactApps/
+├── frontend/
+└── backend/
+📂 frontend/
+Aplikacja kliencka zbudowana w React z wykorzystaniem Vite.
 
-Frontend, znajdujący się w głównym katalogu projektu, został zbudowany w React z wykorzystaniem Vite jako narzędzia do zarządzania środowiskiem deweloperskim.
+Zawartość:
 
+src/components/ – pojedyncze komponenty interfejsu użytkownika, np. formularze, listy, przyciski
 
+src/pages/ – widoki odpowiadające poszczególnym podstronom aplikacji (np. strona główna, koszyk, szczegóły produktu)
 
-🚀 Instalacja i uruchomienie
+src/hooks/ – własne hooki React (np. do pobierania danych)
 
-🔧 Wymagania:
-Node.js
-MongoDB (załączone są jsony bazy danych może je zaimportować w bazie moongoDB należy pamiętać aby dodać swoje ip w panelu moongo)
+src/context/ – zarządzanie stanem globalnym (np. autoryzacja, koszyk)
 
-💻 Uruchomienie projektu lokalnie
+App.jsx – główny komponent aplikacji z routingiem
 
-1️⃣ Klonowanie repozytorium:
+main.jsx – punkt wejścia aplikacji
 
-git clone https://github.com/siemaema/ReactApps.git
+vite.config.js – konfiguracja Vite
 
-cd ReactApps/Projekt Sklepu
+📂 backend/
+Aplikacja serwerowa stworzona z użyciem Node.js i Express. Udostępnia REST API do obsługi użytkowników, produktów i zamówień.
 
-2️⃣ Instalacja zależności:
-npm install
+Zawartość:
 
-3️⃣ Konfiguracja zmiennych środowiskowych:
-Utwórz plik .env w folderze BackEnd/ i dodaj:
+controllers/ – logika odpowiadająca za przetwarzanie żądań (np. dodawanie produktów, logowanie użytkownika)
 
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+routes/ – trasy HTTP powiązane z kontrolerami (np. /api/products)
 
-4️⃣ Uruchomienie backendu:
-cd BackEnd
-node server.mjs
+models/ – schematy Mongoose dla MongoDB (produkty, użytkownicy, zamówienia)
 
-5️⃣ Uruchomienie frontendu:
-cd Projekt Sklepu
-npm run dev (uruchamia się na porcie 5173)
+middleware/ – funkcje pośredniczące (np. ochrona tras, autoryzacja)
 
-📜 Opis kluczowych plików
-🔹 Backend
-server.mjs – Główny plik serwera
+config/ – konfiguracja połączenia z bazą danych
 
-routes/products.js – Endpointy API dla produktów
+utils/ – funkcje pomocnicze (np. generowanie tokenów JWT)
 
-routes/user.js – Endpointy API dla użytkowników
+server.js – główny plik uruchamiający aplikację backendową
 
-models/products.js – Model bazy danych dla produktów
+ℹ️ Status projektu
+To była pierwsza wersja projektu, zrealizowana jako MVP (Minimum Viable Product) w celu nauki i stworzenia funkcjonalnego szkieletu aplikacji sklepu.
 
-models/user.js – Model użytkownika
-
-🔹 Frontend
-
-Screens/MainPage.jsx – Strona główna sklepu
-
-Screens/Cart.jsx – Koszyk użytkownika
-
-Screens/Product.jsx – Strona pojedynczego produktu
-
-Screens/LoginPage.jsx – Logowanie i rejestracja
-
-Components/NavBar.jsx – Nawigacja aplikacji
-
-Components/ProductsList.jsx – Lista produktów
-
-Components/Slider.jsx – Slider promocyjny
-
-
-
-🚀 Technologie
-Frontend: React, Tailwind CSS, Context API
-Backend: Node.js, Express.js, MongoDB, JWT
-Narzędzia: Vite, ESLint
-
-🤝 Chcesz dodać nową funkcjonalność? Zapraszamy do forka repozytorium i składania pull requestów.
-
-git checkout -b feature-new-functionality
-git commit -m "Dodano nową funkcjonalność"
-git push origin feature-new-functionality
+Aktualnie pracuję nad nową wersją, która będzie bardziej zoptymalizowana, z zastosowaniem Reduxa, lepszym podziałem logiki, wydajniejszą strukturą i wdrożeniem na własnym serwerze VPS.
